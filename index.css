@@ -13090,9 +13090,116 @@
   display: block;
   padding: var(--tooltip-padding);
 }
-.layout .layout__panel {
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+.cta-layout .cta-layout__panel {
   margin-top: 60px;
   padding: 12px;
+}
+.cta-nav .cta-navLink {
+  padding-right: 12px;
+}
+.cta-hall {
+  padding: 12px;
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: column;
+          flex-flow: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.cta-hall .cta-hall__scene {
+  width: 100%;
+  height: 20px;
+  margin-top: 12px;
+  background: #fafafa;
+  border-bottom: cadetblue 1px solid;
+  -ms-flex-item-align: center;
+      align-self: center;
+  font-style: italic;
+  text-align: center;
+  line-height: 20px;
+}
+.cta-hall .cta-hall__rows .cta-hall__row {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -ms-flex-negative: 1;
+      flex-shrink: 1;
+}
+.cta-hall .cta-hall__rows .cta-hall__row .cta-hall__seat {
+  min-width: 16px;
+  min-height: 16px;
+  -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+  cursor: pointer;
+  border: #2fb3fa 2px solid;
+  margin: 1px;
+}
+.cta-hall .cta-hall__rows .cta-hall__row .cta-hall__seat_disabled {
+  border: #d6d6d6 2px solid;
+}
+.cta-hall .cta-hall__rows .cta-hall__row .cta-hall__seat_selected {
+  border: lightskyblue 2px solid;
+}
+.cta-hall-editor .cta-hall-editor__head {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: row wrap;
+          flex-flow: row wrap;
+}
+.cta-hall-editor .cta-hall-editor__head .cta-hall-editor__navigator {
+  height: 36px;
+}
+.cta-hall-editor .cta-hall-editor__head .cta-hall-editor__navigator .cta-hall-editor__navigator-actions {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: row;
+          flex-flow: row;
+  -webkit-box-align: baseline;
+      -ms-flex-align: baseline;
+          align-items: baseline;
+}
+.cta-hall-editor .cta-hall-editor__head .cta-hall-editor__navigator .cta-hall-editor__cell-manipulator {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: row nowrap;
+          flex-flow: row nowrap;
+  padding-left: 12px;
+}
+.cta-hall-editor .cta-hall-editor__head .cta-hall-editor__navigator .cta-hall-editor__cell-manipulator .cta-hall-editor__cell-activator {
+  margin-bottom: 0;
+  height: 36px;
+  padding-top: 28px;
+}
+.cta-hall-editor .cta-hall-editor__head .cta-hall-editor__navigator .cta-hall-editor__cell-manipulator .cta-hall-editor__seat-type-selector {
+  padding-left: 12px;
+}
+.cta-autocomplete {
+  cursor: pointer;
+  padding: 0 12px;
 }
 
 /*# sourceMappingURL=index.css.map*/

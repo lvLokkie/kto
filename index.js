@@ -71,6 +71,91 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "../node_modules/arrow-keys-react/lib/ArrowKeysReact.js":
+/*!**************************************************************!*\
+  !*** ../node_modules/arrow-keys-react/lib/ArrowKeysReact.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var ArrowKeysReact = {};
+
+ArrowKeysReact._config = {};
+
+ArrowKeysReact.config = function (config) {
+  var options = ['right', 'left', 'up', 'down'];
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = options[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var option = _step.value;
+
+      if (config.hasOwnProperty(option)) {
+        ArrowKeysReact._config[option] = config[option];
+      }
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+};
+
+ArrowKeysReact.events = {
+  onKeyDown: function onKeyDown(e) {
+    if (e.keyCode === 37) {
+      if (ArrowKeysReact._config.hasOwnProperty('left')) {
+        ArrowKeysReact._config.left();
+      }
+    } else if (e.keyCode === 39) {
+      if (ArrowKeysReact._config.hasOwnProperty('right')) {
+        ArrowKeysReact._config.right();
+      }
+    } else if (e.keyCode === 38) {
+      if (ArrowKeysReact._config.hasOwnProperty('up')) {
+        ArrowKeysReact._config.up();
+      }
+    } else if (e.keyCode === 40) {
+      if (ArrowKeysReact._config.hasOwnProperty('down')) {
+        ArrowKeysReact._config.down();
+      }
+    }
+  }
+};
+
+exports.default = ArrowKeysReact;
+
+/***/ }),
+
+/***/ "../node_modules/arrow-keys-react/main.js":
+/*!************************************************!*\
+  !*** ../node_modules/arrow-keys-react/main.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(/*! ./lib/ArrowKeysReact */ "../node_modules/arrow-keys-react/lib/ArrowKeysReact.js");
+
+
+/***/ }),
+
 /***/ "../node_modules/chain-function/index.js":
 /*!***********************************************!*\
   !*** ../node_modules/chain-function/index.js ***!
@@ -52427,6 +52512,8 @@ var _reactToolbox = __webpack_require__(/*! react-toolbox */ "../node_modules/re
 
 var _Home = _interopRequireDefault(__webpack_require__(/*! Scenes/Home */ "./scenes/Home/index.js"));
 
+var _HallEditor = _interopRequireDefault(__webpack_require__(/*! Scenes/HallEditor */ "./scenes/HallEditor/index.js"));
+
 var _dec, _class;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -52485,17 +52572,27 @@ function (_Component) {
     key: "render",
     value: function render() {
       return _react.default.createElement(_reactToolbox.Layout, {
-        className: "layout"
-      }, _react.default.createElement(_reactToolbox.AppBar, null, _react.default.createElement(_reactToolbox.Navigation, {
+        className: "cta-layout"
+      }, _react.default.createElement(_reactToolbox.AppBar, {
+        className: "cta-appBar"
+      }, _react.default.createElement(_reactToolbox.Navigation, {
+        className: "cta-nav",
         type: "horizontal"
       }, _react.default.createElement(_reactRouterDom.NavLink, {
+        className: "cta-navLink",
         to: "/"
-      }, "Main"))), _react.default.createElement(_reactToolbox.Panel, {
-        className: "layout__panel"
+      }, "\u0413\u043B\u0430\u0432\u043D\u0430\u044F"), _react.default.createElement(_reactRouterDom.NavLink, {
+        className: "cta-navLink",
+        to: "/hall-editor"
+      }, "\u0420\u0435\u0434\u0430\u043A\u0442\u043E\u0440 \u0437\u0430\u043B\u0430"))), _react.default.createElement(_reactToolbox.Panel, {
+        className: "cta-layout__panel"
       }, _react.default.createElement(_reactRouterDom.Switch, null, _react.default.createElement(_reactRouterDom.Route, {
         exact: true,
         path: "/",
         component: _Home.default
+      }), _react.default.createElement(_reactRouterDom.Route, {
+        path: "/hall-editor",
+        component: _HallEditor.default
       }))), _react.default.createElement(_mobxReactDevtools.default, null));
     }
   }]);
@@ -52553,10 +52650,6 @@ function () {
     _initializerDefineProperty(this, "authenticating", _descriptor2, this);
 
     _initializerDefineProperty(this, "mark", _descriptor3, this);
-
-    this.authenticated = false;
-    this.authenticating = false;
-    this.mark = true;
   }
 
   _createClass(AppStore, [{
@@ -52567,29 +52660,27 @@ function () {
   }, {
     key: "authenticate",
     value: function authenticate() {
-      var _this = this;
-
-      return new Promise(function (resolve) {
-        _this.authenticating = true;
-        setTimeout(function () {
-          _this.authenticated = true;
-          _this.authenticating = false;
-          resolve(true);
-        }, 0);
-      });
+      this.authenticated = true;
+      this.authenticating = false;
     }
   }]);
 
   return AppStore;
 }(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "authenticated", [_mobx.observable], {
   enumerable: true,
-  initializer: null
+  initializer: function initializer() {
+    return false;
+  }
 }), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "authenticating", [_mobx.observable], {
   enumerable: true,
-  initializer: null
+  initializer: function initializer() {
+    return false;
+  }
 }), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "mark", [_mobx.observable], {
   enumerable: true,
-  initializer: null
+  initializer: function initializer() {
+    return true;
+  }
 }), _applyDecoratedDescriptor(_class.prototype, "toggleMark", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "toggleMark"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "authenticate", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "authenticate"), _class.prototype)), _class);
 exports.default = AppStore;
 
@@ -52611,9 +52702,9 @@ var _reactDom = _interopRequireDefault(__webpack_require__(/*! react-dom */ "../
 
 var _mobx = __webpack_require__(/*! mobx */ "../node_modules/mobx/lib/mobx.module.js");
 
-var _reactRouterDom = __webpack_require__(/*! react-router-dom */ "../node_modules/react-router-dom/es/index.js");
-
 var _mobxReact = __webpack_require__(/*! mobx-react */ "../node_modules/mobx-react/index.module.js");
+
+var _reactRouterDom = __webpack_require__(/*! react-router-dom */ "../node_modules/react-router-dom/es/index.js");
 
 var _App = _interopRequireDefault(__webpack_require__(/*! ./App */ "./App.js"));
 
@@ -52624,7 +52715,6 @@ var _stores = _interopRequireDefault(__webpack_require__(/*! ./stores */ "./stor
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (0, _mobx.configure)({
-  // use strict
   enforceActions: 'strict',
   isolateGlobalState: true
 });
@@ -52638,6 +52728,1332 @@ var AppContainer = function AppContainer() {
 };
 
 _reactDom.default.render(_react.default.createElement(AppContainer, null), document.getElementById('#app'));
+
+/***/ }),
+
+/***/ "./scenes/HallEditor/components/CellManipulator.js":
+/*!*********************************************************!*\
+  !*** ./scenes/HallEditor/components/CellManipulator.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "../node_modules/react/index.js"));
+
+var _mobxReact = __webpack_require__(/*! mobx-react */ "../node_modules/mobx-react/index.module.js");
+
+var _reactToolbox = __webpack_require__(/*! react-toolbox */ "../node_modules/react-toolbox/lib/index.js");
+
+var _dec, _class;
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } _setPrototypeOf(subClass.prototype, superClass && superClass.prototype); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.getPrototypeOf || function _getPrototypeOf(o) { return o.__proto__; }; return _getPrototypeOf(o); }
+
+var Navigator = (
+/**
+ * Hall editor navigator
+ * @author Ryazanov I.A
+ */
+_dec = (0, _mobxReact.inject)('hallEditorStore'), _dec(_class = (0, _mobxReact.observer)(_class =
+/*#__PURE__*/
+function (_Component) {
+  function Navigator(props) {
+    var _this;
+
+    _classCallCheck(this, Navigator);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Navigator).call(this, props));
+    _this.store = props.hallEditorStore;
+    return _this;
+  }
+
+  _createClass(Navigator, [{
+    key: "render",
+    value: function render() {
+      var currentCell = this.store.currentCell;
+      if (!currentCell) return null;
+      var store = this.store;
+      return _react.default.createElement("div", {
+        className: "cta-hall-editor__cell-manipulator"
+      }, _react.default.createElement(_reactToolbox.Checkbox, {
+        className: "cta-hall-editor__cell-activator",
+        checked: currentCell.isDisabled,
+        label: "\u041D\u0435\u0430\u043A\u0442\u0438\u0432\u043D\u043E",
+        onChange: function onChange() {
+          store.toggleCellActivity(currentCell);
+        }
+      }), _react.default.createElement(_reactToolbox.Dropdown, {
+        className: "cta-hall-editor__seat-type-selector",
+        auto: true,
+        active: true,
+        label: "\u0422\u0438\u043F \u043C\u0435\u0441\u0442\u0430",
+        onChange: function onChange(val) {
+          store.selectSeatType(val);
+        },
+        source: [{
+          value: 'empty',
+          label: 'Пустое место'
+        }, {
+          value: 'parter',
+          label: 'Партер'
+        }, {
+          value: 'lodge',
+          label: 'Ложа'
+        }],
+        value: store.currentSeatType.name
+      }), _react.default.createElement(_reactToolbox.Input, {
+        label: "\u0421\u0442\u043E\u0438\u043C\u043E\u0441\u0442\u044C, \u0440\u0443\u0431.",
+        className: "cta-hall-editor__price-editor",
+        type: "number",
+        value: currentCell.price,
+        onChange: function onChange(val) {
+          store.setSeatPrice(val);
+        }
+      }));
+    }
+  }]);
+
+  _inherits(Navigator, _Component);
+
+  return Navigator;
+}(_react.Component)) || _class) || _class);
+exports.default = Navigator;
+
+/***/ }),
+
+/***/ "./scenes/HallEditor/components/Hall.js":
+/*!**********************************************!*\
+  !*** ./scenes/HallEditor/components/Hall.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "../node_modules/react/index.js"));
+
+var _mobxReact = __webpack_require__(/*! mobx-react */ "../node_modules/mobx-react/index.module.js");
+
+var _Row = _interopRequireDefault(__webpack_require__(/*! ./Hall/Row */ "./scenes/HallEditor/components/Hall/Row.js"));
+
+var _dec, _class;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } _setPrototypeOf(subClass.prototype, superClass && superClass.prototype); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.getPrototypeOf || function _getPrototypeOf(o) { return o.__proto__; }; return _getPrototypeOf(o); }
+
+var Hall = (
+/**
+ * Hall grid
+ * @author Ryazanov I.A
+ */
+_dec = (0, _mobxReact.inject)('hallEditorStore'), _dec(_class = (0, _mobxReact.observer)(_class =
+/*#__PURE__*/
+function (_Component) {
+  function Hall(props) {
+    var _this;
+
+    _classCallCheck(this, Hall);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Hall).call(this, props));
+    _this.store = props.hallEditorStore;
+    return _this;
+  }
+
+  _createClass(Hall, [{
+    key: "render",
+    value: function render() {
+      var store = this.store;
+
+      if (!store.seatMap) {
+        var _this$props = this.props,
+            maxRow = _this$props.maxRow,
+            maxCell = _this$props.maxCell;
+        store.createEmptySeatMap(maxRow, maxCell);
+      }
+
+      return _react.default.createElement("div", {
+        role: "grid",
+        className: "cta-hall"
+      }, _react.default.createElement("div", {
+        className: "cta-hall__scene"
+      }, "\u0421\u0446\u0435\u043D\u0430"), _react.default.createElement("div", {
+        className: "cta-hall__rows"
+      }, store.seatMap.map(function (el) {
+        return _react.default.createElement(_Row.default, {
+          rowMap: el
+        });
+      })));
+    }
+  }]);
+
+  _inherits(Hall, _Component);
+
+  return Hall;
+}(_react.Component)) || _class) || _class);
+exports.default = Hall;
+
+/***/ }),
+
+/***/ "./scenes/HallEditor/components/Hall/Cell.js":
+/*!***************************************************!*\
+  !*** ./scenes/HallEditor/components/Hall/Cell.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _mobx = __webpack_require__(/*! mobx */ "../node_modules/mobx/lib/mobx.module.js");
+
+var _class, _descriptor, _descriptor2, _descriptor3;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object['ke' + 'ys'](descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object['define' + 'Property'](target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and set to use loose mode. ' + 'To use proposal-class-properties in spec mode with decorators, wait for ' + 'the next major version of decorators in stage 2.'); }
+
+/**
+ * Hall editor cell class
+ * @author Ryazanov Ivan
+ */
+var Cell = (_class =
+/*#__PURE__*/
+function () {
+  function Cell(rowIndex, colIndex, seatCategory) {
+    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+    _classCallCheck(this, Cell);
+
+    _initializerDefineProperty(this, "isSelected", _descriptor, this);
+
+    _initializerDefineProperty(this, "isDisabled", _descriptor2, this);
+
+    _initializerDefineProperty(this, "price", _descriptor3, this);
+
+    this.rowIndex = rowIndex;
+    this.cellIndex = colIndex;
+    this.seatCategory = seatCategory;
+    this.isDisabled = !!options.isDisabled;
+    this.isSelected = !!options.isSelected;
+    this.price = seatCategory.minPrice;
+  }
+
+  _createClass(Cell, [{
+    key: "title",
+    get: function get() {
+      return "\u0420\u044F\u0434 ".concat(this.rowNumber, " \u044F\u0447\u0435\u0439\u043A\u0430 ").concat(this.cellNumber);
+    }
+  }, {
+    key: "rowNumber",
+    get: function get() {
+      return this.rowIndex + 1;
+    }
+  }, {
+    key: "cellNumber",
+    get: function get() {
+      return this.cellIndex + 1;
+    }
+  }]);
+
+  return Cell;
+}(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "isSelected", [_mobx.observable], {
+  enumerable: true,
+  initializer: null
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "isDisabled", [_mobx.observable], {
+  enumerable: true,
+  initializer: null
+}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "price", [_mobx.observable], {
+  enumerable: true,
+  initializer: null
+}), _applyDecoratedDescriptor(_class.prototype, "title", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "title"), _class.prototype)), _class);
+exports.default = Cell;
+
+/***/ }),
+
+/***/ "./scenes/HallEditor/components/Hall/Row.js":
+/*!**************************************************!*\
+  !*** ./scenes/HallEditor/components/Hall/Row.js ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "../node_modules/react/index.js"));
+
+var _mobxReact = __webpack_require__(/*! mobx-react */ "../node_modules/mobx-react/index.module.js");
+
+var _Seat = _interopRequireDefault(__webpack_require__(/*! ./Seat */ "./scenes/HallEditor/components/Hall/Seat.js"));
+
+var _class;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } _setPrototypeOf(subClass.prototype, superClass && superClass.prototype); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.getPrototypeOf || function _getPrototypeOf(o) { return o.__proto__; }; return _getPrototypeOf(o); }
+
+var Row =
+/**
+ * Hall row
+ * @author Ryazanov I.A
+ */
+(0, _mobxReact.observer)(_class =
+/*#__PURE__*/
+function (_Component) {
+  function Row() {
+    _classCallCheck(this, Row);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(Row).apply(this, arguments));
+  }
+
+  _createClass(Row, [{
+    key: "render",
+    value: function render() {
+      var rowMap = this.props.rowMap;
+      return _react.default.createElement("div", {
+        className: "cta-hall__row"
+      }, rowMap.map(function (cell) {
+        return _react.default.createElement(_Seat.default, {
+          cell: cell
+        });
+      }));
+    }
+  }]);
+
+  _inherits(Row, _Component);
+
+  return Row;
+}(_react.Component)) || _class;
+
+exports.default = Row;
+
+/***/ }),
+
+/***/ "./scenes/HallEditor/components/Hall/Seat.js":
+/*!***************************************************!*\
+  !*** ./scenes/HallEditor/components/Hall/Seat.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "../node_modules/react/index.js"));
+
+var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "../node_modules/classnames/index.js"));
+
+var _mobxReact = __webpack_require__(/*! mobx-react */ "../node_modules/mobx-react/index.module.js");
+
+var _arrowKeysReact = _interopRequireDefault(__webpack_require__(/*! arrow-keys-react */ "../node_modules/arrow-keys-react/main.js"));
+
+var _dec, _class;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } _setPrototypeOf(subClass.prototype, superClass && superClass.prototype); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.getPrototypeOf || function _getPrototypeOf(o) { return o.__proto__; }; return _getPrototypeOf(o); }
+
+var Seat = (
+/**
+ * Hall cell
+ * @author Ryazanov I.A
+ */
+_dec = (0, _mobxReact.inject)('hallEditorStore'), _dec(_class = (0, _mobxReact.observer)(_class =
+/*#__PURE__*/
+function (_Component) {
+  function Seat(props) {
+    var _this;
+
+    _classCallCheck(this, Seat);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Seat).call(this, props));
+    _this.store = props.hallEditorStore;
+
+    _arrowKeysReact.default.config({
+      left: function left() {
+        _this.store.selectCellLeft();
+      },
+      right: function right() {
+        _this.store.selectCellRight();
+      },
+      up: function up() {
+        _this.store.selectCellUp();
+      },
+      down: function down() {
+        _this.store.selectCellDown();
+      }
+    });
+
+    return _this;
+  }
+
+  _createClass(Seat, [{
+    key: "onSelect",
+    value: function onSelect(row, number) {
+      this.store.selectCell(row, number);
+    }
+  }, {
+    key: "onKeyPress",
+    value: function onKeyPress(ev) {
+      if (ev.charCode === 13 || ev.charCode === 32) {
+        this.store.toggleCellActivity(this.store.currentCell);
+      }
+
+      if (ev) ev.preventDefault();
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this2 = this;
+
+      var cell = this.props.cell;
+      var classNames = (0, _classnames.default)({
+        'cta-hall__seat': true,
+        'cta-hall__seat_disabled': cell.isDisabled,
+        'cta-hall__seat_selected': cell.isSelected
+      });
+      return _react.default.createElement("div", _extends({
+        tabIndex: cell.rowIndex,
+        role: "gridcell",
+        className: classNames,
+        title: cell.title,
+        onFocus: function onFocus() {
+          return _this2.onSelect(cell);
+        },
+        onClick: function onClick() {
+          return _this2.onSelect(cell);
+        },
+        onKeyPress: function onKeyPress(ev) {
+          _this2.onKeyPress(ev);
+        }
+      }, _arrowKeysReact.default.events), "\xA0");
+    }
+  }]);
+
+  _inherits(Seat, _Component);
+
+  return Seat;
+}(_react.Component)) || _class) || _class);
+exports.default = Seat;
+
+/***/ }),
+
+/***/ "./scenes/HallEditor/components/Navigator.js":
+/*!***************************************************!*\
+  !*** ./scenes/HallEditor/components/Navigator.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "../node_modules/react/index.js"));
+
+var _mobxReact = __webpack_require__(/*! mobx-react */ "../node_modules/mobx-react/index.module.js");
+
+var _reactToolbox = __webpack_require__(/*! react-toolbox */ "../node_modules/react-toolbox/lib/index.js");
+
+var _CellManipulator = _interopRequireDefault(__webpack_require__(/*! ./CellManipulator */ "./scenes/HallEditor/components/CellManipulator.js"));
+
+var _dec, _class;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } _setPrototypeOf(subClass.prototype, superClass && superClass.prototype); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.getPrototypeOf || function _getPrototypeOf(o) { return o.__proto__; }; return _getPrototypeOf(o); }
+
+var Navigator = (
+/**
+ * Hall editor navigator
+ * @author Ryazanov I.A
+ */
+_dec = (0, _mobxReact.inject)('hallEditorStore'), _dec(_class = (0, _mobxReact.observer)(_class =
+/*#__PURE__*/
+function (_Component) {
+  function Navigator(props) {
+    var _this;
+
+    _classCallCheck(this, Navigator);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Navigator).call(this, props));
+    _this.store = props.hallEditorStore;
+    return _this;
+  }
+
+  _createClass(Navigator, [{
+    key: "render",
+    value: function render() {
+      var store = this.store;
+      return _react.default.createElement("div", {
+        className: "cta-hall-editor__navigator"
+      }, _react.default.createElement("div", {
+        className: "cta-hall-editor__navigator-title"
+      }), _react.default.createElement("div", {
+        className: "cta-hall-editor__navigator-actions"
+      }, _react.default.createElement(_reactToolbox.Button, {
+        className: "cta-hall-editor__chooseButton",
+        label: store.institution.title,
+        onClick: function onClick() {
+          return store.showSeanceSelectorDialog();
+        }
+      }), _react.default.createElement(_reactToolbox.Button, {
+        className: "cta-hall-editor__chooseButton",
+        label: store.hall.title,
+        onClick: function onClick() {
+          return store.showSeanceSelectorDialog();
+        },
+        primary: true
+      }), _react.default.createElement(_reactToolbox.Button, {
+        className: "cta-hall-editor__chooseButton",
+        label: store.seanceCaption,
+        onClick: function onClick() {
+          return store.showSeanceSelectorDialog();
+        },
+        accent: true
+      }), _react.default.createElement(_CellManipulator.default, null)));
+    }
+  }]);
+
+  _inherits(Navigator, _Component);
+
+  return Navigator;
+}(_react.Component)) || _class) || _class);
+exports.default = Navigator;
+
+/***/ }),
+
+/***/ "./scenes/HallEditor/components/SeanceSelector.js":
+/*!********************************************************!*\
+  !*** ./scenes/HallEditor/components/SeanceSelector.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "../node_modules/react/index.js"));
+
+var _mobxReact = __webpack_require__(/*! mobx-react */ "../node_modules/mobx-react/index.module.js");
+
+var _reactToolbox = __webpack_require__(/*! react-toolbox */ "../node_modules/react-toolbox/lib/index.js");
+
+var _data = __webpack_require__(/*! Scenes/HallEditor/service/resources/data */ "./scenes/HallEditor/service/resources/data.js");
+
+var _dec, _class;
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } _setPrototypeOf(subClass.prototype, superClass && superClass.prototype); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.getPrototypeOf || function _getPrototypeOf(o) { return o.__proto__; }; return _getPrototypeOf(o); }
+
+var SeanceSelector = (
+/**
+ * Seance selector dialog
+ * @author Ryazanov I.A
+ * @class SeanceSelector
+ */
+_dec = (0, _mobxReact.inject)('hallEditorStore'), _dec(_class = (0, _mobxReact.observer)(_class =
+/*#__PURE__*/
+function (_Component) {
+  function SeanceSelector(props) {
+    var _this;
+
+    _classCallCheck(this, SeanceSelector);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(SeanceSelector).call(this, props));
+    _this.store = props.hallEditorStore;
+    return _this;
+  }
+
+  _createClass(SeanceSelector, [{
+    key: "render",
+    value: function render() {
+      var store = this.store;
+      return _react.default.createElement("div", {
+        className: "cta-container"
+      }, _react.default.createElement(_reactToolbox.Dialog, {
+        className: "cta-dialog" // actions={[{ label: 'Новый сеанс' }, { primary: true, label: 'Продолжить' }]}
+        ,
+        active: store.showSeanceSelector,
+        onEscKeyDown: function onEscKeyDown() {
+          store.hideSeanceSelectorDialog();
+        },
+        onOverlayClick: function onOverlayClick() {
+          store.hideSeanceSelectorDialog();
+        }
+      }, _react.default.createElement(_reactToolbox.Autocomplete, {
+        className: "cta-autocomplete",
+        direction: "down",
+        value: store.institution.id,
+        multiple: false,
+        label: "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u043E\u0435 \u0437\u0430\u0432\u0435\u0434\u0435\u043D\u0438\u0435",
+        error: store.institution.error,
+        onChange: function onChange(ev, val) {
+          store.selectInstitution(ev, val);
+        },
+        source: (0, _data.convertToAutoCompleteSource)(_data.INSTITUTIONS, 'id', 'title')
+      }), _react.default.createElement(_reactToolbox.Autocomplete, {
+        className: "cta-autocomplete",
+        direction: "down",
+        value: store.hall.id,
+        error: store.hall.error,
+        multiple: false,
+        label: "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0439 \u0437\u0430\u043B",
+        onChange: function onChange(ev, val) {
+          store.selectHall(ev, val);
+        },
+        source: (0, _data.convertToAutoCompleteSource)(_data.HALLS, 'id', 'title')
+      }), _react.default.createElement(_reactToolbox.Autocomplete, {
+        className: "cta-autocomplete",
+        direction: "down",
+        value: store.seance.id,
+        error: store.seance.error,
+        multiple: false,
+        label: "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0439 \u0441\u0435\u0430\u043D\u0441",
+        onChange: function onChange(ev, val) {
+          store.selectSeance(ev, val);
+        },
+        source: (0, _data.convertToAutoCompleteSource)(_data.SEANCES, 'id', 'title')
+      })));
+    }
+  }]);
+
+  _inherits(SeanceSelector, _Component);
+
+  return SeanceSelector;
+}(_react.Component)) || _class) || _class);
+exports.default = SeanceSelector;
+
+/***/ }),
+
+/***/ "./scenes/HallEditor/index.js":
+/*!************************************!*\
+  !*** ./scenes/HallEditor/index.js ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "../node_modules/react/index.js"));
+
+var _mobxReact = __webpack_require__(/*! mobx-react */ "../node_modules/mobx-react/index.module.js");
+
+var _reactToolbox = __webpack_require__(/*! react-toolbox */ "../node_modules/react-toolbox/lib/index.js");
+
+var _Navigator = _interopRequireDefault(__webpack_require__(/*! ./components/Navigator */ "./scenes/HallEditor/components/Navigator.js"));
+
+var _Hall = _interopRequireDefault(__webpack_require__(/*! ./components/Hall */ "./scenes/HallEditor/components/Hall.js"));
+
+var _SeanceSelector = _interopRequireDefault(__webpack_require__(/*! ./components/SeanceSelector */ "./scenes/HallEditor/components/SeanceSelector.js"));
+
+var _dec, _class;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } _setPrototypeOf(subClass.prototype, superClass && superClass.prototype); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.getPrototypeOf || function _getPrototypeOf(o) { return o.__proto__; }; return _getPrototypeOf(o); }
+
+var HallEditor = (_dec = (0, _mobxReact.inject)('hallEditorStore'), _dec(_class = (0, _mobxReact.observer)(_class =
+/*#__PURE__*/
+function (_Component) {
+  function HallEditor(props) {
+    var _this;
+
+    _classCallCheck(this, HallEditor);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(HallEditor).call(this, props));
+    _this.store = props.hallEditorStore;
+    return _this;
+  }
+
+  _createClass(HallEditor, [{
+    key: "render",
+    value: function render() {
+      var store = this.store;
+      return _react.default.createElement("div", {
+        className: "cta-hall-editor"
+      }, _react.default.createElement("div", {
+        className: "cta-hall-editor__head"
+      }, _react.default.createElement(_Navigator.default, null)), _react.default.createElement(_Hall.default, {
+        tabindex: 0,
+        className: "cta-hall-editor__hall",
+        maxRow: 100,
+        maxCell: 100
+      }), _react.default.createElement(_SeanceSelector.default, null), _react.default.createElement(_reactToolbox.Snackbar, {
+        active: !!store.snackMessage,
+        label: store.snackMessage,
+        timeout: 3000
+      }));
+    }
+  }]);
+
+  _inherits(HallEditor, _Component);
+
+  return HallEditor;
+}(_react.Component)) || _class) || _class);
+exports.default = HallEditor;
+
+/***/ }),
+
+/***/ "./scenes/HallEditor/service/resources/data.js":
+/*!*****************************************************!*\
+  !*** ./scenes/HallEditor/service/resources/data.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.convertToAutoCompleteSource = convertToAutoCompleteSource;
+exports.SEANCES = exports.INSTITUTIONS = exports.HALLS = exports.HALL_SECTIONS = exports.SEATS_MAP = void 0;
+var INSTITUTIONS = [{
+  id: 1,
+  title: 'Тюменский драматический театр'
+}, {
+  id: 2,
+  title: 'Тюменский немного драматический театр'
+}];
+exports.INSTITUTIONS = INSTITUTIONS;
+var HALLS = [{
+  id: 1,
+  title: 'Большой зал',
+  seatsCount: 250,
+  defaultScale: '60%'
+}, {
+  id: 2,
+  title: 'Малый зал',
+  seatsCount: 40,
+  defaultScale: '100%'
+}];
+exports.HALLS = HALLS;
+var HALL_SECTIONS = [{
+  id: 0,
+  title: 'Партер'
+}, {
+  id: 1,
+  title: 'Амфитеатр'
+}, {
+  id: 2,
+  title: 'Ложе'
+}];
+exports.HALL_SECTIONS = HALL_SECTIONS;
+var SEATS_MAP = [{
+  type: 0,
+  section: 0,
+  row: 0,
+  number: 1
+}, {
+  type: 0,
+  section: 0,
+  row: 0,
+  number: 1
+}, {
+  type: 0,
+  section: 0,
+  row: 0,
+  number: 1
+}, {
+  type: 0,
+  section: 0,
+  row: 0,
+  number: 1
+}, {
+  type: 0,
+  section: 0,
+  row: 0,
+  number: 1
+}, {
+  type: 0,
+  section: 1,
+  row: 1,
+  number: 1
+}, {
+  type: 1,
+  section: 1,
+  row: 1,
+  number: 1
+}, {
+  type: 2,
+  section: 1,
+  row: 1,
+  number: 1
+}, {
+  type: 3,
+  section: 1,
+  row: 1,
+  number: 1
+}, {
+  type: 4,
+  section: 1,
+  row: 1,
+  number: 1
+}, {
+  type: 0,
+  section: 2,
+  row: 0,
+  number: 1
+}, {
+  type: 0,
+  section: 2,
+  row: 0,
+  number: 1
+}, {
+  type: 0,
+  section: 2,
+  row: 0,
+  number: 1
+}, {
+  type: 0,
+  section: 2,
+  row: 0,
+  number: 1
+}, {
+  type: 0,
+  section: 2,
+  row: 0,
+  number: 1
+}];
+exports.SEATS_MAP = SEATS_MAP;
+var SEANCES = [{
+  id: 1,
+  hallId: 1,
+  versionId: 1,
+  title: 'Горе от ума',
+  date: new Date()
+}, {
+  id: 2,
+  hallId: 2,
+  versionId: 1,
+  title: 'Горе от ума',
+  date: new Date()
+}];
+exports.SEANCES = SEANCES;
+
+function convertToAutoCompleteSource(objArr, keyTitle, valueTitle) {
+  return objArr.reduce(function (acc, cur) {
+    acc[cur[keyTitle]] = cur[valueTitle];
+    return acc;
+  }, {});
+}
+
+/***/ }),
+
+/***/ "./scenes/HallEditor/store.js":
+/*!************************************!*\
+  !*** ./scenes/HallEditor/store.js ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _mobx = __webpack_require__(/*! mobx */ "../node_modules/mobx/lib/mobx.module.js");
+
+var _Cell = _interopRequireDefault(__webpack_require__(/*! ./components/Hall/Cell */ "./scenes/HallEditor/components/Hall/Cell.js"));
+
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object['ke' + 'ys'](descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object['define' + 'Property'](target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and set to use loose mode. ' + 'To use proposal-class-properties in spec mode with decorators, wait for ' + 'the next major version of decorators in stage 2.'); }
+
+/**
+ * Hall editor page state store
+ * @author Ivan Ryazanov
+ * @class HallEditorStore
+ */
+var HallEditorStore = (_dec = (0, _mobx.action)('Create empty seats map'), _dec2 = (0, _mobx.action)('Parse seat map'), _dec3 = (0, _mobx.action)('Set price'), _dec4 = (0, _mobx.action)('Select seat type'), _dec5 = (0, _mobx.action)('Select cell'), _dec6 = (0, _mobx.action)('Select cell by ids'), _dec7 = (0, _mobx.action)('Toggle cell activity'), _dec8 = (0, _mobx.action)('Enable cell'), _dec9 = (0, _mobx.action)('Disable cell'), _dec10 = (0, _mobx.action)('Select up'), _dec11 = (0, _mobx.action)('Select down'), _dec12 = (0, _mobx.action)('Select right'), _dec13 = (0, _mobx.action)('Select left'), _dec14 = (0, _mobx.action)('Select institution'), _dec15 = (0, _mobx.action)('Select Hall'), _dec16 = (0, _mobx.action)('Select seance'), _dec17 = (0, _mobx.action)('Show snack bar'), _dec18 = (0, _mobx.action)('Show seance selector'), _dec19 = (0, _mobx.action)('Hide seance selector'), (_class =
+/*#__PURE__*/
+function () {
+  function HallEditorStore() {
+    _classCallCheck(this, HallEditorStore);
+
+    _initializerDefineProperty(this, "showSeanceSelector", _descriptor, this);
+
+    _initializerDefineProperty(this, "snackMessage", _descriptor2, this);
+
+    _initializerDefineProperty(this, "institution", _descriptor3, this);
+
+    _initializerDefineProperty(this, "hall", _descriptor4, this);
+
+    _initializerDefineProperty(this, "seance", _descriptor5, this);
+
+    _initializerDefineProperty(this, "selectedCell", _descriptor6, this);
+
+    _initializerDefineProperty(this, "seatMap", _descriptor7, this);
+
+    _initializerDefineProperty(this, "selectedSeatType", _descriptor8, this);
+
+    this.seatTypes = {
+      empty: {
+        minPrice: 0,
+        label: 'Пусто'
+      },
+      parter: {
+        minPrice: 99.9,
+        value: 'Партер'
+      },
+      lodge: {
+        minPrice: 24.9,
+        value: 'Ложа'
+      }
+    };
+  }
+
+  _createClass(HallEditorStore, [{
+    key: "createEmptySeatMap",
+    value: function createEmptySeatMap(maxRow, maxCol) {
+      var rows = new Array(maxRow);
+
+      for (var rowIndex = 0; rowIndex <= maxRow; rowIndex += 1) {
+        rows[rowIndex] = new Array(maxCol);
+
+        for (var cellIndex = 0; cellIndex <= maxCol; cellIndex += 1) {
+          rows[rowIndex][cellIndex] = new _Cell.default(rowIndex, cellIndex, this.seatTypes.empty, {
+            isDisabled: true,
+            isSelected: false
+          });
+        }
+      }
+
+      this.seatMap = rows;
+    }
+  }, {
+    key: "parseSeatMap",
+    value: function parseSeatMap(rawSeatMap) {// todo BL entry
+    }
+  }, {
+    key: "setSeatPrice",
+    value: function setSeatPrice(val) {
+      var cellIndices = this.getCurrentCellIndices();
+      var targetCell = this.getCellByIndices(cellIndices.rowIndex, cellIndices.cellIndex);
+      targetCell.price = val;
+      this.enableCell(targetCell);
+      this.selectCell(targetCell);
+    }
+  }, {
+    key: "selectSeatType",
+    value: function selectSeatType(val) {
+      if (this.seatTypes[val]) {
+        this.selectedSeatType = val;
+      }
+    }
+  }, {
+    key: "selectCell",
+    value: function selectCell(cell) {
+      var targetCell = this.getCellByIndices(cell.rowIndex, cell.cellIndex);
+
+      if (targetCell) {
+        if (this.currentCell) {
+          this.currentCell.isSelected = false;
+        }
+
+        targetCell.isSelected = true;
+        this.selectedCell = targetCell;
+      } else {
+        this.snackMessage = "\u041D\u0435\u0432\u043E\u0437\u043C\u043E\u0436\u043D\u043E \u0432\u044B\u0431\u0440\u0430\u0442\u044C \u044F\u0447\u0435\u0439\u043A\u0443 ".concat(cell.rowNumber, " ").concat(cell.cellNumber);
+      }
+    }
+  }, {
+    key: "selectCellByIndices",
+    value: function selectCellByIndices(rowIndex, cellIndex) {
+      var cell = this.getCellByIndices(rowIndex, cellIndex);
+
+      if (cell) {
+        this.selectCell(cell);
+      }
+    }
+  }, {
+    key: "toggleCellActivity",
+    value: function toggleCellActivity(cell) {
+      var currentCell = this.getCellByIndices(cell.rowIndex, cell.cellIndex);
+
+      if (currentCell) {
+        // todo connect to bl
+        this.selectedSeatType = currentCell.isDisabled ? 'parter' : 'empty';
+        currentCell.seatCatgory = this.currentSeatType;
+        currentCell.isDisabled = !currentCell.isDisabled;
+      }
+    }
+  }, {
+    key: "enableCell",
+    value: function enableCell(cell) {
+      var currentCell = this.getCellByIndices(cell.rowIndex, cell.cellIndex);
+
+      if (currentCell) {
+        // todo connect to bl
+        this.selectedSeatType = 'parter';
+        currentCell.seatCatgory = this.currentSeatType;
+        currentCell.isDisabled = false;
+      }
+    }
+  }, {
+    key: "disableCell",
+    value: function disableCell(cell) {
+      var currentCell = this.getCellByIndices(cell.rowIndex, cell.cellIndex);
+
+      if (currentCell) {
+        currentCell.isDisabled = true;
+      }
+    }
+  }, {
+    key: "selectCellUp",
+    value: function selectCellUp() {
+      var cellIndices = this.getCurrentCellIndices();
+      this.selectCellByIndices(cellIndices.rowIndex - 1, cellIndices.cellIndex);
+    }
+  }, {
+    key: "selectCellDown",
+    value: function selectCellDown() {
+      var cellIndices = this.getCurrentCellIndices();
+      this.selectCellByIndices(cellIndices.rowIndex + 1, cellIndices.cellIndex);
+    }
+  }, {
+    key: "selectCellRight",
+    value: function selectCellRight() {
+      var cellIndices = this.getCurrentCellIndices();
+      this.selectCellByIndices(cellIndices.rowIndex, cellIndices.cellIndex + 1);
+    }
+  }, {
+    key: "selectCellLeft",
+    value: function selectCellLeft() {
+      var cellIndices = this.getCurrentCellIndices();
+      this.selectCellByIndices(cellIndices.rowIndex, cellIndices.cellIndex - 1);
+    }
+  }, {
+    key: "selectInstitution",
+    value: function selectInstitution(ev, val) {
+      console.log(val);
+    }
+  }, {
+    key: "selectHall",
+    value: function selectHall(ev, val) {
+      console.log(val);
+    }
+  }, {
+    key: "selectSeance",
+    value: function selectSeance(ev, val) {
+      console.log(val);
+    }
+  }, {
+    key: "showSnackBar",
+    value: function showSnackBar(message) {
+      this.snackMessage = message;
+    }
+  }, {
+    key: "showSeanceSelectorDialog",
+    value: function showSeanceSelectorDialog() {
+      this.showSeanceSelector = true;
+    }
+  }, {
+    key: "hideSeanceSelectorDialog",
+    value: function hideSeanceSelectorDialog() {
+      this.showSeanceSelector = false;
+    }
+  }, {
+    key: "getCurrentCellIndices",
+    value: function getCurrentCellIndices() {
+      if (this.currentCell) {
+        var _this$currentCell = this.currentCell,
+            rowIndex = _this$currentCell.rowIndex,
+            cellIndex = _this$currentCell.cellIndex;
+        return {
+          rowIndex: rowIndex,
+          cellIndex: cellIndex
+        };
+      }
+
+      return {
+        rowIndex: 0,
+        cellIndex: 0
+      };
+    }
+  }, {
+    key: "getCellByIndices",
+    value: function getCellByIndices(rowIndex, cellIndex) {
+      return this.seatMap && this.seatMap[rowIndex] && this.seatMap[rowIndex][cellIndex];
+    }
+  }, {
+    key: "seanceCaption",
+    get: function get() {
+      var seance = this.seance;
+      return "".concat(seance.title, " (").concat(seance.date.toLocaleDateString(), ")");
+    }
+  }, {
+    key: "rowsCount",
+    get: function get() {
+      var seatMap = this.seatMap;
+      return seatMap && seatMap.length();
+    }
+  }, {
+    key: "currentCell",
+    get: function get() {
+      if (this.selectedCell) {
+        return this.selectedCell;
+      }
+
+      return null;
+    }
+  }, {
+    key: "currentSeatType",
+    get: function get() {
+      var seatType = this.seatTypes[this.selectedSeatType];
+      seatType.name = this.selectedSeatType;
+      return seatType;
+    }
+  }]);
+
+  return HallEditorStore;
+}(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "showSeanceSelector", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return false;
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "snackMessage", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return null;
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "institution", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return {
+      id: 1,
+      title: 'Тюменский драматический театр',
+      error: null
+    };
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, "hall", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return {
+      id: 1,
+      title: 'Большой зал',
+      error: null
+    };
+  }
+}), _descriptor5 = _applyDecoratedDescriptor(_class.prototype, "seance", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return {
+      id: 1,
+      title: 'Горе от ума',
+      date: new Date(),
+      error: null
+    };
+  }
+}), _descriptor6 = _applyDecoratedDescriptor(_class.prototype, "selectedCell", [_mobx.observable], {
+  enumerable: true,
+  initializer: null
+}), _descriptor7 = _applyDecoratedDescriptor(_class.prototype, "seatMap", [_mobx.observable], {
+  enumerable: true,
+  initializer: null
+}), _descriptor8 = _applyDecoratedDescriptor(_class.prototype, "selectedSeatType", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return 'empty';
+  }
+}), _applyDecoratedDescriptor(_class.prototype, "seanceCaption", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "seanceCaption"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "rowsCount", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "rowsCount"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "currentCell", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "currentCell"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "currentSeatType", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "currentSeatType"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "createEmptySeatMap", [_dec], Object.getOwnPropertyDescriptor(_class.prototype, "createEmptySeatMap"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "parseSeatMap", [_dec2], Object.getOwnPropertyDescriptor(_class.prototype, "parseSeatMap"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setSeatPrice", [_dec3], Object.getOwnPropertyDescriptor(_class.prototype, "setSeatPrice"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectSeatType", [_dec4], Object.getOwnPropertyDescriptor(_class.prototype, "selectSeatType"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCell", [_dec5], Object.getOwnPropertyDescriptor(_class.prototype, "selectCell"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCellByIndices", [_dec6], Object.getOwnPropertyDescriptor(_class.prototype, "selectCellByIndices"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "toggleCellActivity", [_dec7], Object.getOwnPropertyDescriptor(_class.prototype, "toggleCellActivity"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "enableCell", [_dec8], Object.getOwnPropertyDescriptor(_class.prototype, "enableCell"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "disableCell", [_dec9], Object.getOwnPropertyDescriptor(_class.prototype, "disableCell"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCellUp", [_dec10], Object.getOwnPropertyDescriptor(_class.prototype, "selectCellUp"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCellDown", [_dec11], Object.getOwnPropertyDescriptor(_class.prototype, "selectCellDown"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCellRight", [_dec12], Object.getOwnPropertyDescriptor(_class.prototype, "selectCellRight"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCellLeft", [_dec13], Object.getOwnPropertyDescriptor(_class.prototype, "selectCellLeft"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectInstitution", [_dec14], Object.getOwnPropertyDescriptor(_class.prototype, "selectInstitution"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectHall", [_dec15], Object.getOwnPropertyDescriptor(_class.prototype, "selectHall"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectSeance", [_dec16], Object.getOwnPropertyDescriptor(_class.prototype, "selectSeance"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "showSnackBar", [_dec17], Object.getOwnPropertyDescriptor(_class.prototype, "showSnackBar"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "showSeanceSelectorDialog", [_dec18], Object.getOwnPropertyDescriptor(_class.prototype, "showSeanceSelectorDialog"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "hideSeanceSelectorDialog", [_dec19], Object.getOwnPropertyDescriptor(_class.prototype, "hideSeanceSelectorDialog"), _class.prototype)), _class));
+exports.default = HallEditorStore;
 
 /***/ }),
 
@@ -52700,15 +54116,7 @@ function (_Component) {
   _createClass(HallEditor, [{
     key: "render",
     value: function render() {
-      var _this2 = this;
-
-      return _react.default.createElement("div", null, _react.default.createElement(_reactToolbox.Button, {
-        label: "Push",
-        onClick: function onClick() {
-          return _this2.store.toggleMark();
-        },
-        accent: true
-      }), this.store.mark.toString());
+      return _react.default.createElement("div", null, "\u0420\u0430\u0437\u0434\u0435\u043B \u043D\u0430\u0445\u043E\u0434\u0438\u0442\u0441\u044F \u0432 \u0440\u0430\u0437\u0440\u0430\u0431\u043E\u0442\u043A\u0435.");
     }
   }]);
 
@@ -52737,10 +54145,14 @@ exports.default = void 0;
 
 var _AppStore = _interopRequireDefault(__webpack_require__(/*! ./AppStore */ "./AppStore.js"));
 
+var _store = _interopRequireDefault(__webpack_require__(/*! Scenes/HallEditor/store */ "./scenes/HallEditor/store.js"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// pages stores
 var _default = {
-  appStore: new _AppStore.default()
+  appStore: new _AppStore.default(),
+  hallEditorStore: new _store.default()
 };
 exports.default = _default;
 
