@@ -52297,6 +52297,58 @@ function resolvePathname(to) {
 
 /***/ }),
 
+/***/ "../node_modules/unique-key/src/index.js":
+/*!***********************************************!*\
+  !*** ../node_modules/unique-key/src/index.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function(size, prefix, trans, charType) {
+    var _len;
+    var _charType = 'alphanum';
+    if(size && typeof size === 'object' && size.size) {
+        _len = size.size;
+    } else _len = typeof size === 'number' ? size : 16;
+    if(size && typeof size === 'object' && size.prefix) {
+        prefix = size.prefix;
+    } else prefix = typeof size === 'string' ? size : prefix ? prefix : '';
+    if((size && typeof size === 'object' && size.transform && 
+    (size.transform === 'upper' || size.transform === 'lower')
+    ) || trans && typeof trans == 'string' && (trans === 'upper' || trans === 'lower')) {
+        var transform = function(string) {
+            return size.transform === 'upper' || trans === 'upper' ? string.toUpperCase() : string.toLowerCase();
+        };
+    }
+    if(size && typeof size === 'object' && size.charType
+        && (size.charType === 'alphanum' || size.charType === 'numeric' || size.charType === 'num' || size.charType === 'alpha')
+    ) {
+        _charType = size.charType;
+    } else if(charType && typeof charType == 'string' && (charType === 'numeric' || charType === 'num' || charType === 'alpha' || charType === 'alphanum')) {
+        _charType = charType;
+    }
+    if(_len) {
+        var bucket = [];
+        if(_charType === 'numeric' || _charType === 'num' || _charType === 'alphanum')
+            bucket = bucket.concat(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
+        if(_charType === 'alpha' || _charType === 'alphanum') {
+    	    bucket = bucket.concat(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+    	        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+    	    ]);
+        }
+    	var randomString = prefix, index, bucketSize = bucket.length;
+        while (_len--) {
+            index = Math.floor(Math.random()*bucketSize);
+            randomString += bucket[index];
+        }
+        return transform ? transform(randomString) : randomString;
+    } else {
+        throw new Error("Invalid parameters passed to function");
+    }
+};
+
+/***/ }),
+
 /***/ "../node_modules/value-equal/index.js":
 /*!********************************************!*\
   !*** ../node_modules/value-equal/index.js ***!
@@ -52731,10 +52783,10 @@ _reactDom.default.render(_react.default.createElement(AppContainer, null), docum
 
 /***/ }),
 
-/***/ "./scenes/HallEditor/components/CellManipulator.js":
-/*!*********************************************************!*\
-  !*** ./scenes/HallEditor/components/CellManipulator.js ***!
-  \*********************************************************/
+/***/ "./scenes/HallEditor/components/CellEditor.js":
+/*!****************************************************!*\
+  !*** ./scenes/HallEditor/components/Editor.js ***!
+  \****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -52776,7 +52828,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.getPrototypeOf || functio
 
 var Navigator = (
 /**
- * Hall editor navigator
+ * Cell editor
  * @author Ryazanov I.A
  */
 _dec = (0, _mobxReact.inject)('hallEditorStore'), _dec(_class = (0, _mobxReact.observer)(_class =
@@ -52788,7 +52840,7 @@ function (_Component) {
     _classCallCheck(this, Navigator);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Navigator).call(this, props));
-    _this.store = props.hallEditorStore;
+    _this.store = props.hallEditorStore.hall;
     return _this;
   }
 
@@ -52807,33 +52859,6 @@ function (_Component) {
         onChange: function onChange() {
           store.toggleCellActivity(currentCell);
         }
-      }), _react.default.createElement(_reactToolbox.Dropdown, {
-        className: "cta-hall-editor__seat-type-selector",
-        auto: true,
-        active: true,
-        label: "\u0422\u0438\u043F \u043C\u0435\u0441\u0442\u0430",
-        onChange: function onChange(val) {
-          store.selectSeatType(val);
-        },
-        source: [{
-          value: 'empty',
-          label: 'Пустое место'
-        }, {
-          value: 'parter',
-          label: 'Партер'
-        }, {
-          value: 'lodge',
-          label: 'Ложа'
-        }],
-        value: store.currentSeatType.name
-      }), _react.default.createElement(_reactToolbox.Input, {
-        label: "\u0421\u0442\u043E\u0438\u043C\u043E\u0441\u0442\u044C, \u0440\u0443\u0431.",
-        className: "cta-hall-editor__price-editor",
-        type: "number",
-        value: currentCell.price,
-        onChange: function onChange(val) {
-          store.setSeatPrice(val);
-        }
       }));
     }
   }]);
@@ -52843,6 +52868,84 @@ function (_Component) {
   return Navigator;
 }(_react.Component)) || _class) || _class);
 exports.default = Navigator;
+
+/***/ }),
+
+/***/ "./scenes/HallEditor/components/CellEditor/store.js":
+/*!**********************************************************!*\
+  !*** ./scenes/HallEditor/components/Editor/store.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _mobx = __webpack_require__(/*! mobx */ "../node_modules/mobx/lib/mobx.module.js");
+
+var _class, _descriptor, _descriptor2;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object['ke' + 'ys'](descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object['define' + 'Property'](target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and set to use loose mode. ' + 'To use proposal-class-properties in spec mode with decorators, wait for ' + 'the next major version of decorators in stage 2.'); }
+
+/**
+ * Cell editor`s state store
+ * @author Ryazanov Ivan
+ */
+var CellEditorStore = (_class =
+/*#__PURE__*/
+function () {
+  function CellEditorStore() {
+    _classCallCheck(this, CellEditorStore);
+
+    _initializerDefineProperty(this, "selectedCell", _descriptor, this);
+
+    _initializerDefineProperty(this, "selectedSeatType", _descriptor2, this);
+  }
+
+  _createClass(CellEditorStore, [{
+    key: "setSeatPrice",
+    value: function setSeatPrice(val) {
+      var cellIndices = this.getCurrentCellIndices();
+      var targetCell = this.getCellByIndices(cellIndices.rowIndex, cellIndices.cellIndex);
+      targetCell.price = val;
+      this.enableCell(targetCell);
+      this.selectCell(targetCell);
+    }
+  }, {
+    key: "selectSeatType",
+    value: function selectSeatType(val) {
+      if (this.seatTypes[val]) {
+        this.selectedSeatType = val;
+      }
+    }
+  }]);
+
+  return CellEditorStore;
+}(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "selectedCell", [_mobx.observable], {
+  enumerable: true,
+  initializer: null
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "selectedSeatType", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return 'empty';
+  }
+}), _applyDecoratedDescriptor(_class.prototype, "setSeatPrice", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "setSeatPrice"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectSeatType", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "selectSeatType"), _class.prototype)), _class);
+exports.default = CellEditorStore;
 
 /***/ }),
 
@@ -52865,7 +52968,9 @@ var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "../node_m
 
 var _mobxReact = __webpack_require__(/*! mobx-react */ "../node_modules/mobx-react/index.module.js");
 
-var _Row = _interopRequireDefault(__webpack_require__(/*! ./Hall/Row */ "./scenes/HallEditor/components/Hall/Row.js"));
+var _uniqueKey = _interopRequireDefault(__webpack_require__(/*! unique-key */ "../node_modules/unique-key/src/index.js"));
+
+var _Row = _interopRequireDefault(__webpack_require__(/*! ./Hall/components/Row */ "./scenes/HallEditor/components/Hall/components/Row.js"));
 
 var _dec, _class;
 
@@ -52912,13 +53017,15 @@ function (_Component) {
   _createClass(Hall, [{
     key: "render",
     value: function render() {
-      var store = this.store;
+      var _this2 = this;
 
-      if (!store.seatMap) {
+      var hallStore = this.store.getHallStore();
+
+      if (!hallStore.cellsMap) {
         var _this$props = this.props,
             maxRow = _this$props.maxRow,
             maxCell = _this$props.maxCell;
-        store.createEmptySeatMap(maxRow, maxCell);
+        hallStore.createEmptyCellsMap(maxRow, maxCell);
       }
 
       return _react.default.createElement("div", {
@@ -52928,9 +53035,11 @@ function (_Component) {
         className: "cta-hall__scene"
       }, "\u0421\u0446\u0435\u043D\u0430"), _react.default.createElement("div", {
         className: "cta-hall__rows"
-      }, store.seatMap.map(function (el) {
+      }, hallStore.cellsMap.map(function (el, i) {
         return _react.default.createElement(_Row.default, {
-          rowMap: el
+          key: (0, _uniqueKey.default)(16, i),
+          rowMap: el,
+          onCellSelect: _this2.onCellSelect
         });
       })));
     }
@@ -52944,181 +53053,10 @@ exports.default = Hall;
 
 /***/ }),
 
-/***/ "./scenes/HallEditor/components/Hall/Cell.js":
-/*!***************************************************!*\
-  !*** ./scenes/HallEditor/components/Hall/Cell.js ***!
-  \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _mobx = __webpack_require__(/*! mobx */ "../node_modules/mobx/lib/mobx.module.js");
-
-var _class, _descriptor, _descriptor2, _descriptor3;
-
-function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object['ke' + 'ys'](descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object['define' + 'Property'](target, property, desc); desc = null; } return desc; }
-
-function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and set to use loose mode. ' + 'To use proposal-class-properties in spec mode with decorators, wait for ' + 'the next major version of decorators in stage 2.'); }
-
-/**
- * Hall editor cell class
- * @author Ryazanov Ivan
- */
-var Cell = (_class =
-/*#__PURE__*/
-function () {
-  function Cell(rowIndex, colIndex, seatCategory) {
-    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-
-    _classCallCheck(this, Cell);
-
-    _initializerDefineProperty(this, "isSelected", _descriptor, this);
-
-    _initializerDefineProperty(this, "isDisabled", _descriptor2, this);
-
-    _initializerDefineProperty(this, "price", _descriptor3, this);
-
-    this.rowIndex = rowIndex;
-    this.cellIndex = colIndex;
-    this.seatCategory = seatCategory;
-    this.isDisabled = !!options.isDisabled;
-    this.isSelected = !!options.isSelected;
-    this.price = seatCategory.minPrice;
-  }
-
-  _createClass(Cell, [{
-    key: "title",
-    get: function get() {
-      return "\u0420\u044F\u0434 ".concat(this.rowNumber, " \u044F\u0447\u0435\u0439\u043A\u0430 ").concat(this.cellNumber);
-    }
-  }, {
-    key: "rowNumber",
-    get: function get() {
-      return this.rowIndex + 1;
-    }
-  }, {
-    key: "cellNumber",
-    get: function get() {
-      return this.cellIndex + 1;
-    }
-  }]);
-
-  return Cell;
-}(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "isSelected", [_mobx.observable], {
-  enumerable: true,
-  initializer: null
-}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "isDisabled", [_mobx.observable], {
-  enumerable: true,
-  initializer: null
-}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "price", [_mobx.observable], {
-  enumerable: true,
-  initializer: null
-}), _applyDecoratedDescriptor(_class.prototype, "title", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "title"), _class.prototype)), _class);
-exports.default = Cell;
-
-/***/ }),
-
-/***/ "./scenes/HallEditor/components/Hall/Row.js":
-/*!**************************************************!*\
-  !*** ./scenes/HallEditor/components/Hall/Row.js ***!
-  \**************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "../node_modules/react/index.js"));
-
-var _mobxReact = __webpack_require__(/*! mobx-react */ "../node_modules/mobx-react/index.module.js");
-
-var _Seat = _interopRequireDefault(__webpack_require__(/*! ./Seat */ "./scenes/HallEditor/components/Hall/Seat.js"));
-
-var _class;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } _setPrototypeOf(subClass.prototype, superClass && superClass.prototype); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.getPrototypeOf || function _getPrototypeOf(o) { return o.__proto__; }; return _getPrototypeOf(o); }
-
-var Row =
-/**
- * Hall row
- * @author Ryazanov I.A
- */
-(0, _mobxReact.observer)(_class =
-/*#__PURE__*/
-function (_Component) {
-  function Row() {
-    _classCallCheck(this, Row);
-
-    return _possibleConstructorReturn(this, _getPrototypeOf(Row).apply(this, arguments));
-  }
-
-  _createClass(Row, [{
-    key: "render",
-    value: function render() {
-      var rowMap = this.props.rowMap;
-      return _react.default.createElement("div", {
-        className: "cta-hall__row"
-      }, rowMap.map(function (cell) {
-        return _react.default.createElement(_Seat.default, {
-          cell: cell
-        });
-      }));
-    }
-  }]);
-
-  _inherits(Row, _Component);
-
-  return Row;
-}(_react.Component)) || _class;
-
-exports.default = Row;
-
-/***/ }),
-
-/***/ "./scenes/HallEditor/components/Hall/Seat.js":
-/*!***************************************************!*\
-  !*** ./scenes/HallEditor/components/Hall/Seat.js ***!
-  \***************************************************/
+/***/ "./scenes/HallEditor/components/Hall/components/Cell.js":
+/*!**************************************************************!*\
+  !*** ./scenes/HallEditor/components/Hall/components/Cell.js ***!
+  \**************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -53164,7 +53102,7 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.getPrototypeOf || function _getPrototypeOf(o) { return o.__proto__; }; return _getPrototypeOf(o); }
 
-var Seat = (
+var Cell = (
 /**
  * Hall cell
  * @author Ryazanov I.A
@@ -53172,42 +53110,40 @@ var Seat = (
 _dec = (0, _mobxReact.inject)('hallEditorStore'), _dec(_class = (0, _mobxReact.observer)(_class =
 /*#__PURE__*/
 function (_Component) {
-  function Seat(props) {
+  function Cell(props) {
     var _this;
 
-    _classCallCheck(this, Seat);
+    _classCallCheck(this, Cell);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Seat).call(this, props));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Cell).call(this, props));
     _this.store = props.hallEditorStore;
+
+    var hallStore = _this.store.getHallStore();
 
     _arrowKeysReact.default.config({
       left: function left() {
-        _this.store.selectCellLeft();
+        hallStore.selectCellLeft();
       },
       right: function right() {
-        _this.store.selectCellRight();
+        hallStore.selectCellRight();
       },
       up: function up() {
-        _this.store.selectCellUp();
+        hallStore.selectCellUp();
       },
       down: function down() {
-        _this.store.selectCellDown();
+        hallStore.selectCellDown();
       }
     });
 
     return _this;
   }
 
-  _createClass(Seat, [{
-    key: "onSelect",
-    value: function onSelect(row, number) {
-      this.store.selectCell(row, number);
-    }
-  }, {
+  _createClass(Cell, [{
     key: "onKeyPress",
     value: function onKeyPress(ev) {
       if (ev.charCode === 13 || ev.charCode === 32) {
-        this.store.toggleCellActivity(this.store.currentCell);
+        var hallStore = this.store.getHallStore();
+        hallStore.toggleCellActivity(hallStore.currentCell);
       }
 
       if (ev) ev.preventDefault();
@@ -53215,8 +53151,7 @@ function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this2 = this;
-
+      var hallStore = this.store.getHallStore();
       var cell = this.props.cell;
       var classNames = (0, _classnames.default)({
         'cta-hall__seat': true,
@@ -53228,24 +53163,395 @@ function (_Component) {
         role: "gridcell",
         className: classNames,
         title: cell.title,
-        onFocus: function onFocus() {
-          return _this2.onSelect(cell);
-        },
         onClick: function onClick() {
-          return _this2.onSelect(cell);
-        },
-        onKeyPress: function onKeyPress(ev) {
-          _this2.onKeyPress(ev);
+          return hallStore.selectCell(cell);
         }
-      }, _arrowKeysReact.default.events), "\xA0");
+      }, _arrowKeysReact.default.events));
     }
   }]);
 
-  _inherits(Seat, _Component);
+  _inherits(Cell, _Component);
 
-  return Seat;
+  return Cell;
 }(_react.Component)) || _class) || _class);
-exports.default = Seat;
+exports.default = Cell;
+
+/***/ }),
+
+/***/ "./scenes/HallEditor/components/Hall/components/Row.js":
+/*!*************************************************************!*\
+  !*** ./scenes/HallEditor/components/Hall/components/Row.js ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "../node_modules/react/index.js"));
+
+var _mobxReact = __webpack_require__(/*! mobx-react */ "../node_modules/mobx-react/index.module.js");
+
+var _uniqueKey = _interopRequireDefault(__webpack_require__(/*! unique-key */ "../node_modules/unique-key/src/index.js"));
+
+var _Cell = _interopRequireDefault(__webpack_require__(/*! ./Cell */ "./scenes/HallEditor/components/Hall/components/Cell.js"));
+
+var _dec, _class;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } _setPrototypeOf(subClass.prototype, superClass && superClass.prototype); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.getPrototypeOf || function _getPrototypeOf(o) { return o.__proto__; }; return _getPrototypeOf(o); }
+
+var Row = (
+/**
+ * Hall row
+ * @author Ryazanov I.A
+ */
+_dec = (0, _mobxReact.inject)('hallEditorStore'), _dec(_class = (0, _mobxReact.observer)(_class =
+/*#__PURE__*/
+function (_Component) {
+  function Row(props) {
+    var _this;
+
+    _classCallCheck(this, Row);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Row).call(this, props));
+    _this.store = props.hallEditorStore;
+    return _this;
+  }
+
+  _createClass(Row, [{
+    key: "render",
+    value: function render() {
+      var rowMap = this.props.rowMap;
+      return _react.default.createElement("div", {
+        className: "cta-hall__row"
+      }, rowMap.map(function (cell, i) {
+        return _react.default.createElement(_Cell.default, {
+          key: (0, _uniqueKey.default)(16, i),
+          cell: cell
+        });
+      }));
+    }
+  }]);
+
+  _inherits(Row, _Component);
+
+  return Row;
+}(_react.Component)) || _class) || _class);
+exports.default = Row;
+
+/***/ }),
+
+/***/ "./scenes/HallEditor/components/Hall/components/classes/Cell.js":
+/*!**********************************************************************!*\
+  !*** ./scenes/HallEditor/components/Hall/components/classes/Cell.js ***!
+  \**********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _mobx = __webpack_require__(/*! mobx */ "../node_modules/mobx/lib/mobx.module.js");
+
+var _class, _descriptor, _descriptor2, _descriptor3;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object['ke' + 'ys'](descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object['define' + 'Property'](target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and set to use loose mode. ' + 'To use proposal-class-properties in spec mode with decorators, wait for ' + 'the next major version of decorators in stage 2.'); }
+
+/**
+ * Cell state store
+ * @author Ryazanov Ivan
+ */
+var CellStore = (_class =
+/*#__PURE__*/
+function () {
+  function CellStore(rowIndex, colIndex) {
+    var seat = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+    _classCallCheck(this, CellStore);
+
+    _initializerDefineProperty(this, "isSelected", _descriptor, this);
+
+    _initializerDefineProperty(this, "isDisabled", _descriptor2, this);
+
+    _initializerDefineProperty(this, "seat", _descriptor3, this);
+
+    this.rowIndex = rowIndex;
+    this.cellIndex = colIndex;
+    this.seat = seat;
+    this.isDisabled = !!options.isDisabled;
+    this.isSelected = !!options.isSelected;
+  }
+
+  _createClass(CellStore, [{
+    key: "setSelection",
+    value: function setSelection(isSelected) {
+      this.isSelected = isSelected;
+    }
+  }, {
+    key: "attachSeat",
+    value: function attachSeat(seat) {
+      this.seat = seat;
+    }
+  }, {
+    key: "removeSeat",
+    value: function removeSeat() {
+      this.seat = null;
+    }
+  }, {
+    key: "title",
+    get: function get() {
+      return "\u0420\u044F\u0434 ".concat(this.rowNumber, " \u044F\u0447\u0435\u0439\u043A\u0430 ").concat(this.cellNumber);
+    }
+  }, {
+    key: "rowNumber",
+    get: function get() {
+      return this.rowIndex + 1;
+    }
+  }, {
+    key: "cellNumber",
+    get: function get() {
+      return this.cellIndex + 1;
+    }
+  }]);
+
+  return CellStore;
+}(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "isSelected", [_mobx.observable], {
+  enumerable: true,
+  initializer: null
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "isDisabled", [_mobx.observable], {
+  enumerable: true,
+  initializer: null
+}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "seat", [_mobx.observable], {
+  enumerable: true,
+  initializer: null
+}), _applyDecoratedDescriptor(_class.prototype, "title", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "title"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setSelection", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "setSelection"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "attachSeat", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "attachSeat"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "removeSeat", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "removeSeat"), _class.prototype)), _class);
+exports.default = CellStore;
+
+/***/ }),
+
+/***/ "./scenes/HallEditor/components/Hall/store.js":
+/*!****************************************************!*\
+  !*** ./scenes/HallEditor/components/Hall/store.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _mobx = __webpack_require__(/*! mobx */ "../node_modules/mobx/lib/mobx.module.js");
+
+var _Cell = _interopRequireDefault(__webpack_require__(/*! ./components/classes/Cell */ "./scenes/HallEditor/components/Hall/components/classes/Cell.js"));
+
+var _class, _descriptor, _descriptor2;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object['ke' + 'ys'](descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object['define' + 'Property'](target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and set to use loose mode. ' + 'To use proposal-class-properties in spec mode with decorators, wait for ' + 'the next major version of decorators in stage 2.'); }
+
+/**
+ * Hall state store
+ * @author Ryazanov Ivan
+ */
+var HallStore = (_class =
+/*#__PURE__*/
+function () {
+  function HallStore() {
+    _classCallCheck(this, HallStore);
+
+    _initializerDefineProperty(this, "cellsMap", _descriptor, this);
+
+    _initializerDefineProperty(this, "selectedCell", _descriptor2, this);
+  }
+
+  _createClass(HallStore, [{
+    key: "createEmptySeatMap",
+    value: function createEmptySeatMap(maxRow, maxCol) {
+      var rows = new Array(maxRow);
+
+      for (var rowIndex = 0; rowIndex <= maxRow; rowIndex += 1) {
+        rows[rowIndex] = new Array(maxCol);
+
+        for (var cellIndex = 0; cellIndex <= maxCol; cellIndex += 1) {
+          rows[rowIndex][cellIndex] = new _Cell.default(rowIndex, cellIndex, null, {
+            isDisabled: true,
+            isSelected: false
+          });
+        }
+      }
+
+      this.cellsMap = rows;
+    }
+  }, {
+    key: "selectCell",
+    value: function selectCell(cell) {
+      if (this.currentCell) {
+        this.currentCell.setSelection(false);
+      }
+
+      var targetCell = this.getCellByIndices(cell.rowIndex, cell.cellIndex);
+      targetCell.setSelection(true);
+      this.selectedCell = targetCell;
+    }
+  }, {
+    key: "selectCellByIndices",
+    value: function selectCellByIndices(rowIndex, cellIndex) {
+      var cell = this.getCellByIndices(rowIndex, cellIndex);
+
+      if (cell) {
+        this.selectCell(cell);
+      }
+    }
+  }, {
+    key: "toggleCellActivity",
+    value: function toggleCellActivity(cell) {
+      var currentCell = this.getCellByIndices(cell.rowIndex, cell.cellIndex);
+
+      if (currentCell) {
+        currentCell.isDisabled = !currentCell.isDisabled;
+      }
+    }
+  }, {
+    key: "enableCell",
+    value: function enableCell(cell) {
+      var currentCell = this.getCellByIndices(cell.rowIndex, cell.cellIndex);
+
+      if (currentCell) {
+        currentCell.isDisabled = false;
+      }
+    }
+  }, {
+    key: "disableCell",
+    value: function disableCell(cell) {
+      var currentCell = this.getCellByIndices(cell.rowIndex, cell.cellIndex);
+
+      if (currentCell) {
+        currentCell.isDisabled = true;
+      }
+    }
+  }, {
+    key: "selectCellUp",
+    value: function selectCellUp() {
+      var cellIndices = this.getCurrentCellIndices();
+      this.selectCellByIndices(cellIndices.rowIndex - 1, cellIndices.cellIndex);
+    }
+  }, {
+    key: "selectCellDown",
+    value: function selectCellDown() {
+      var cellIndices = this.getCurrentCellIndices();
+      this.selectCellByIndices(cellIndices.rowIndex + 1, cellIndices.cellIndex);
+    }
+  }, {
+    key: "selectCellRight",
+    value: function selectCellRight() {
+      var cellIndices = this.getCurrentCellIndices();
+      this.selectCellByIndices(cellIndices.rowIndex, cellIndices.cellIndex + 1);
+    }
+  }, {
+    key: "selectCellLeft",
+    value: function selectCellLeft() {
+      var cellIndices = this.getCurrentCellIndices();
+      this.selectCellByIndices(cellIndices.rowIndex, cellIndices.cellIndex - 1);
+    }
+  }, {
+    key: "getCurrentCellIndices",
+    value: function getCurrentCellIndices() {
+      if (this.currentCell) {
+        var _this$currentCell = this.currentCell,
+            rowIndex = _this$currentCell.rowIndex,
+            cellIndex = _this$currentCell.cellIndex;
+        return {
+          rowIndex: rowIndex,
+          cellIndex: cellIndex
+        };
+      }
+
+      return {
+        rowIndex: 0,
+        cellIndex: 0
+      };
+    }
+  }, {
+    key: "getCellByIndices",
+    value: function getCellByIndices(rowIndex, cellIndex) {
+      return this.cellsMap && this.cellsMap[rowIndex] && this.cellsMap[rowIndex][cellIndex];
+    }
+  }, {
+    key: "currentCell",
+    get: function get() {
+      return this.selectedCell;
+    }
+  }]);
+
+  return HallStore;
+}(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "cellsMap", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return null;
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "selectedCell", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return null;
+  }
+}), _applyDecoratedDescriptor(_class.prototype, "currentCell", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "currentCell"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "createEmptySeatMap", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "createEmptySeatMap"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCell", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "selectCell"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCellByIndices", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "selectCellByIndices"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "toggleCellActivity", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "toggleCellActivity"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "enableCell", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "enableCell"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "disableCell", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "disableCell"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCellUp", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "selectCellUp"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCellDown", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "selectCellDown"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCellRight", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "selectCellRight"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCellLeft", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "selectCellLeft"), _class.prototype)), _class);
+exports.default = HallStore;
 
 /***/ }),
 
@@ -53270,7 +53576,7 @@ var _mobxReact = __webpack_require__(/*! mobx-react */ "../node_modules/mobx-rea
 
 var _reactToolbox = __webpack_require__(/*! react-toolbox */ "../node_modules/react-toolbox/lib/index.js");
 
-var _CellManipulator = _interopRequireDefault(__webpack_require__(/*! ./CellManipulator */ "./scenes/HallEditor/components/CellManipulator.js"));
+var _SeanceSelector = _interopRequireDefault(__webpack_require__(/*! ./SeanceSelector */ "./scenes/HallEditor/components/SeanceSelector.js"));
 
 var _dec, _class;
 
@@ -53310,14 +53616,14 @@ function (_Component) {
     _classCallCheck(this, Navigator);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Navigator).call(this, props));
-    _this.store = props.hallEditorStore;
+    _this.seanceSelectorStore = props.hallEditorStore.seanceSelector;
     return _this;
   }
 
   _createClass(Navigator, [{
     key: "render",
     value: function render() {
-      var store = this.store;
+      var seanceSelectorStore = this.seanceSelectorStore;
       return _react.default.createElement("div", {
         className: "cta-hall-editor__navigator"
       }, _react.default.createElement("div", {
@@ -53326,25 +53632,25 @@ function (_Component) {
         className: "cta-hall-editor__navigator-actions"
       }, _react.default.createElement(_reactToolbox.Button, {
         className: "cta-hall-editor__chooseButton",
-        label: store.institution.title,
+        label: seanceSelectorStore.theater.title,
         onClick: function onClick() {
-          return store.showSeanceSelectorDialog();
+          return seanceSelectorStore.showSeanceSelector();
         }
       }), _react.default.createElement(_reactToolbox.Button, {
         className: "cta-hall-editor__chooseButton",
-        label: store.hall.title,
+        label: seanceSelectorStore.hall.title,
         onClick: function onClick() {
-          return store.showSeanceSelectorDialog();
+          return seanceSelectorStore.showSeanceSelector();
         },
         primary: true
       }), _react.default.createElement(_reactToolbox.Button, {
         className: "cta-hall-editor__chooseButton",
-        label: store.seanceCaption,
+        label: seanceSelectorStore.seanceCaption,
         onClick: function onClick() {
-          return store.showSeanceSelectorDialog();
+          return seanceSelectorStore.showSeanceSelector();
         },
         accent: true
-      }), _react.default.createElement(_CellManipulator.default, null)));
+      })), _react.default.createElement(_SeanceSelector.default, null));
     }
   }]);
 
@@ -53405,7 +53711,6 @@ var SeanceSelector = (
 /**
  * Seance selector dialog
  * @author Ryazanov I.A
- * @class SeanceSelector
  */
 _dec = (0, _mobxReact.inject)('hallEditorStore'), _dec(_class = (0, _mobxReact.observer)(_class =
 /*#__PURE__*/
@@ -53416,7 +53721,7 @@ function (_Component) {
     _classCallCheck(this, SeanceSelector);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(SeanceSelector).call(this, props));
-    _this.store = props.hallEditorStore;
+    _this.store = props.hallEditorStore.seanceSelector;
     return _this;
   }
 
@@ -53429,20 +53734,20 @@ function (_Component) {
       }, _react.default.createElement(_reactToolbox.Dialog, {
         className: "cta-dialog" // actions={[{ label: 'Новый сеанс' }, { primary: true, label: 'Продолжить' }]}
         ,
-        active: store.showSeanceSelector,
+        active: store.isSeanceSelectorVisible,
         onEscKeyDown: function onEscKeyDown() {
-          store.hideSeanceSelectorDialog();
+          store.hideSeanceSelector();
         },
         onOverlayClick: function onOverlayClick() {
-          store.hideSeanceSelectorDialog();
+          store.hideSeanceSelector();
         }
       }, _react.default.createElement(_reactToolbox.Autocomplete, {
         className: "cta-autocomplete",
         direction: "down",
-        value: store.institution.id,
+        value: store.theater.id,
         multiple: false,
         label: "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u043E\u0435 \u0437\u0430\u0432\u0435\u0434\u0435\u043D\u0438\u0435",
-        error: store.institution.error,
+        error: store.theater.error,
         onChange: function onChange(ev, val) {
           store.selectInstitution(ev, val);
         },
@@ -53481,6 +53786,143 @@ exports.default = SeanceSelector;
 
 /***/ }),
 
+/***/ "./scenes/HallEditor/components/SeanceSelector/store.js":
+/*!**************************************************************!*\
+  !*** ./scenes/HallEditor/components/SeanceSelector/store.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _mobx = __webpack_require__(/*! mobx */ "../node_modules/mobx/lib/mobx.module.js");
+
+var _class, _descriptor, _descriptor2, _descriptor3, _descriptor4;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object['ke' + 'ys'](descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object['define' + 'Property'](target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and set to use loose mode. ' + 'To use proposal-class-properties in spec mode with decorators, wait for ' + 'the next major version of decorators in stage 2.'); }
+
+/**
+ * Seance selector state store
+ * @author Ryazanov Ivan
+ */
+var SeanceSelectorStore = (_class =
+/*#__PURE__*/
+function () {
+  function SeanceSelectorStore() {
+    _classCallCheck(this, SeanceSelectorStore);
+
+    _initializerDefineProperty(this, "isSeanceSelectorVisible", _descriptor, this);
+
+    _initializerDefineProperty(this, "selectedTheater", _descriptor2, this);
+
+    _initializerDefineProperty(this, "selectedHall", _descriptor3, this);
+
+    _initializerDefineProperty(this, "selectedSeance", _descriptor4, this);
+  }
+
+  _createClass(SeanceSelectorStore, [{
+    key: "showSeanceSelector",
+    value: function showSeanceSelector() {
+      this.isSeanceSelectorVisible = true;
+    }
+  }, {
+    key: "hideSeanceSelector",
+    value: function hideSeanceSelector() {
+      this.isSeanceSelectorVisible = false;
+    }
+  }, {
+    key: "selectInstitution",
+    value: function selectInstitution(ev, val) {
+      console.log(val);
+    }
+  }, {
+    key: "selectHall",
+    value: function selectHall(ev, val) {
+      console.log(val);
+    }
+  }, {
+    key: "selectSeance",
+    value: function selectSeance(ev, val) {
+      console.log(val);
+    }
+  }, {
+    key: "theater",
+    get: function get() {
+      return this.selectedTheater;
+    }
+  }, {
+    key: "hall",
+    get: function get() {
+      return this.selectedHall;
+    }
+  }, {
+    key: "seance",
+    get: function get() {
+      return this.selectedSeance;
+    }
+  }, {
+    key: "seanceCaption",
+    get: function get() {
+      var seance = this.seance;
+      return "".concat(seance.title, " (").concat(seance.date.toLocaleDateString(), ")");
+    }
+  }]);
+
+  return SeanceSelectorStore;
+}(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "isSeanceSelectorVisible", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return false;
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "selectedTheater", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return {
+      id: 1,
+      title: 'Тюменский драматический театр',
+      error: null
+    };
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "selectedHall", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return {
+      id: 1,
+      title: 'Большой зал',
+      error: null
+    };
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, "selectedSeance", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return {
+      id: 1,
+      title: 'Горе от ума',
+      date: new Date(),
+      error: null
+    };
+  }
+}), _applyDecoratedDescriptor(_class.prototype, "theater", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "theater"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "hall", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "hall"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "seance", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "seance"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "seanceCaption", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "seanceCaption"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "showSeanceSelector", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "showSeanceSelector"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "hideSeanceSelector", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "hideSeanceSelector"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectInstitution", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "selectInstitution"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectHall", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "selectHall"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectSeance", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "selectSeance"), _class.prototype)), _class);
+exports.default = SeanceSelectorStore;
+
+/***/ }),
+
 /***/ "./scenes/HallEditor/index.js":
 /*!************************************!*\
   !*** ./scenes/HallEditor/index.js ***!
@@ -53502,11 +53944,13 @@ var _mobxReact = __webpack_require__(/*! mobx-react */ "../node_modules/mobx-rea
 
 var _reactToolbox = __webpack_require__(/*! react-toolbox */ "../node_modules/react-toolbox/lib/index.js");
 
+var _arrowKeysReact = _interopRequireDefault(__webpack_require__(/*! arrow-keys-react */ "../node_modules/arrow-keys-react/main.js"));
+
 var _Navigator = _interopRequireDefault(__webpack_require__(/*! ./components/Navigator */ "./scenes/HallEditor/components/Navigator.js"));
 
-var _Hall = _interopRequireDefault(__webpack_require__(/*! ./components/Hall */ "./scenes/HallEditor/components/Hall.js"));
+var _CellEditor = _interopRequireDefault(__webpack_require__(/*! ./components/Editor */ "./scenes/HallEditor/components/Editor.js"));
 
-var _SeanceSelector = _interopRequireDefault(__webpack_require__(/*! ./components/SeanceSelector */ "./scenes/HallEditor/components/SeanceSelector.js"));
+var _Hall = _interopRequireDefault(__webpack_require__(/*! ./components/Hall */ "./scenes/HallEditor/components/Hall.js"));
 
 var _dec, _class;
 
@@ -53542,6 +53986,9 @@ function (_Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(HallEditor).call(this, props));
     _this.store = props.hallEditorStore;
+
+    var hallStore = _this.store.getHallStore();
+
     return _this;
   }
 
@@ -53553,14 +54000,17 @@ function (_Component) {
         className: "cta-hall-editor"
       }, _react.default.createElement("div", {
         className: "cta-hall-editor__head"
-      }, _react.default.createElement(_Navigator.default, null)), _react.default.createElement(_Hall.default, {
-        tabindex: 0,
+      }, _react.default.createElement(_Navigator.default, null), _react.default.createElement(_CellEditor.default, null)), _react.default.createElement(_Hall.default, {
         className: "cta-hall-editor__hall",
+        tabIndex: 0,
         maxRow: 100,
         maxCell: 100
-      }), _react.default.createElement(_SeanceSelector.default, null), _react.default.createElement(_reactToolbox.Snackbar, {
-        active: !!store.snackMessage,
-        label: store.snackMessage,
+      }), _react.default.createElement(_reactToolbox.Snackbar, {
+        active: store.isSnackbarVisible,
+        label: store.snackbarMessage,
+        onTimeout: function onTimeout() {
+          return store.hideSnackbar();
+        },
         timeout: 3000
       }));
     }
@@ -53734,13 +54184,17 @@ function convertToAutoCompleteSource(objArr, keyTitle, valueTitle) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.HallEditorStore = exports.default = void 0;
 
 var _mobx = __webpack_require__(/*! mobx */ "../node_modules/mobx/lib/mobx.module.js");
 
-var _Cell = _interopRequireDefault(__webpack_require__(/*! ./components/Hall/Cell */ "./scenes/HallEditor/components/Hall/Cell.js"));
+var _store = _interopRequireDefault(__webpack_require__(/*! ./components/Hall/store */ "./scenes/HallEditor/components/Hall/store.js"));
 
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8;
+var _store2 = _interopRequireDefault(__webpack_require__(/*! ./components/Editor/store */ "./scenes/HallEditor/components/Editor/store.js"));
+
+var _store3 = _interopRequireDefault(__webpack_require__(/*! ./components/SeanceSelector/store */ "./scenes/HallEditor/components/SeanceSelector/store.js"));
+
+var _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -53759,224 +54213,50 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 /**
  * Hall editor page state store
  * @author Ivan Ryazanov
- * @class HallEditorStore
  */
-var HallEditorStore = (_dec = (0, _mobx.action)('Create empty seats map'), _dec2 = (0, _mobx.action)('Parse seat map'), _dec3 = (0, _mobx.action)('Set price'), _dec4 = (0, _mobx.action)('Select seat type'), _dec5 = (0, _mobx.action)('Select cell'), _dec6 = (0, _mobx.action)('Select cell by ids'), _dec7 = (0, _mobx.action)('Toggle cell activity'), _dec8 = (0, _mobx.action)('Enable cell'), _dec9 = (0, _mobx.action)('Disable cell'), _dec10 = (0, _mobx.action)('Select up'), _dec11 = (0, _mobx.action)('Select down'), _dec12 = (0, _mobx.action)('Select right'), _dec13 = (0, _mobx.action)('Select left'), _dec14 = (0, _mobx.action)('Select institution'), _dec15 = (0, _mobx.action)('Select Hall'), _dec16 = (0, _mobx.action)('Select seance'), _dec17 = (0, _mobx.action)('Show snack bar'), _dec18 = (0, _mobx.action)('Show seance selector'), _dec19 = (0, _mobx.action)('Hide seance selector'), (_class =
+var HallEditorStore = (_class =
 /*#__PURE__*/
 function () {
   function HallEditorStore() {
     _classCallCheck(this, HallEditorStore);
 
-    _initializerDefineProperty(this, "showSeanceSelector", _descriptor, this);
+    _initializerDefineProperty(this, "hall", _descriptor, this);
 
-    _initializerDefineProperty(this, "snackMessage", _descriptor2, this);
+    _initializerDefineProperty(this, "cellEditor", _descriptor2, this);
 
-    _initializerDefineProperty(this, "institution", _descriptor3, this);
+    _initializerDefineProperty(this, "seanceSelector", _descriptor3, this);
 
-    _initializerDefineProperty(this, "hall", _descriptor4, this);
+    _initializerDefineProperty(this, "isSnackbarVisible", _descriptor4, this);
 
-    _initializerDefineProperty(this, "seance", _descriptor5, this);
-
-    _initializerDefineProperty(this, "selectedCell", _descriptor6, this);
-
-    _initializerDefineProperty(this, "seatMap", _descriptor7, this);
-
-    _initializerDefineProperty(this, "selectedSeatType", _descriptor8, this);
-
-    this.seatTypes = {
-      empty: {
-        minPrice: 0,
-        label: 'Пусто'
-      },
-      parter: {
-        minPrice: 99.9,
-        value: 'Партер'
-      },
-      lodge: {
-        minPrice: 24.9,
-        value: 'Ложа'
-      }
-    };
+    _initializerDefineProperty(this, "snackbarMessage", _descriptor5, this);
   }
 
   _createClass(HallEditorStore, [{
-    key: "createEmptySeatMap",
-    value: function createEmptySeatMap(maxRow, maxCol) {
-      var rows = new Array(maxRow);
-
-      for (var rowIndex = 0; rowIndex <= maxRow; rowIndex += 1) {
-        rows[rowIndex] = new Array(maxCol);
-
-        for (var cellIndex = 0; cellIndex <= maxCol; cellIndex += 1) {
-          rows[rowIndex][cellIndex] = new _Cell.default(rowIndex, cellIndex, this.seatTypes.empty, {
-            isDisabled: true,
-            isSelected: false
-          });
-        }
-      }
-
-      this.seatMap = rows;
+    key: "getHallStore",
+    value: function getHallStore() {
+      return this.hall;
     }
   }, {
-    key: "parseSeatMap",
-    value: function parseSeatMap(rawSeatMap) {// todo BL entry
+    key: "getEditorStore",
+    value: function getCellEditorStore() {
+      return this.cellEditor;
     }
   }, {
-    key: "setSeatPrice",
-    value: function setSeatPrice(val) {
-      var cellIndices = this.getCurrentCellIndices();
-      var targetCell = this.getCellByIndices(cellIndices.rowIndex, cellIndices.cellIndex);
-      targetCell.price = val;
-      this.enableCell(targetCell);
-      this.selectCell(targetCell);
+    key: "getSeanceSelectorStore",
+    value: function getSeanceSelectorStore() {
+      return this.seanceSelector;
     }
   }, {
-    key: "selectSeatType",
-    value: function selectSeatType(val) {
-      if (this.seatTypes[val]) {
-        this.selectedSeatType = val;
-      }
+    key: "showSnackbar",
+    value: function showSnackbar(message) {
+      this.snackbarMessage = message;
+      this.isSnackbarVisible = true;
     }
   }, {
-    key: "selectCell",
-    value: function selectCell(cell) {
-      var targetCell = this.getCellByIndices(cell.rowIndex, cell.cellIndex);
-
-      if (targetCell) {
-        if (this.currentCell) {
-          this.currentCell.isSelected = false;
-        }
-
-        targetCell.isSelected = true;
-        this.selectedCell = targetCell;
-      } else {
-        this.snackMessage = "\u041D\u0435\u0432\u043E\u0437\u043C\u043E\u0436\u043D\u043E \u0432\u044B\u0431\u0440\u0430\u0442\u044C \u044F\u0447\u0435\u0439\u043A\u0443 ".concat(cell.rowNumber, " ").concat(cell.cellNumber);
-      }
-    }
-  }, {
-    key: "selectCellByIndices",
-    value: function selectCellByIndices(rowIndex, cellIndex) {
-      var cell = this.getCellByIndices(rowIndex, cellIndex);
-
-      if (cell) {
-        this.selectCell(cell);
-      }
-    }
-  }, {
-    key: "toggleCellActivity",
-    value: function toggleCellActivity(cell) {
-      var currentCell = this.getCellByIndices(cell.rowIndex, cell.cellIndex);
-
-      if (currentCell) {
-        // todo connect to bl
-        this.selectedSeatType = currentCell.isDisabled ? 'parter' : 'empty';
-        currentCell.seatCatgory = this.currentSeatType;
-        currentCell.isDisabled = !currentCell.isDisabled;
-      }
-    }
-  }, {
-    key: "enableCell",
-    value: function enableCell(cell) {
-      var currentCell = this.getCellByIndices(cell.rowIndex, cell.cellIndex);
-
-      if (currentCell) {
-        // todo connect to bl
-        this.selectedSeatType = 'parter';
-        currentCell.seatCatgory = this.currentSeatType;
-        currentCell.isDisabled = false;
-      }
-    }
-  }, {
-    key: "disableCell",
-    value: function disableCell(cell) {
-      var currentCell = this.getCellByIndices(cell.rowIndex, cell.cellIndex);
-
-      if (currentCell) {
-        currentCell.isDisabled = true;
-      }
-    }
-  }, {
-    key: "selectCellUp",
-    value: function selectCellUp() {
-      var cellIndices = this.getCurrentCellIndices();
-      this.selectCellByIndices(cellIndices.rowIndex - 1, cellIndices.cellIndex);
-    }
-  }, {
-    key: "selectCellDown",
-    value: function selectCellDown() {
-      var cellIndices = this.getCurrentCellIndices();
-      this.selectCellByIndices(cellIndices.rowIndex + 1, cellIndices.cellIndex);
-    }
-  }, {
-    key: "selectCellRight",
-    value: function selectCellRight() {
-      var cellIndices = this.getCurrentCellIndices();
-      this.selectCellByIndices(cellIndices.rowIndex, cellIndices.cellIndex + 1);
-    }
-  }, {
-    key: "selectCellLeft",
-    value: function selectCellLeft() {
-      var cellIndices = this.getCurrentCellIndices();
-      this.selectCellByIndices(cellIndices.rowIndex, cellIndices.cellIndex - 1);
-    }
-  }, {
-    key: "selectInstitution",
-    value: function selectInstitution(ev, val) {
-      console.log(val);
-    }
-  }, {
-    key: "selectHall",
-    value: function selectHall(ev, val) {
-      console.log(val);
-    }
-  }, {
-    key: "selectSeance",
-    value: function selectSeance(ev, val) {
-      console.log(val);
-    }
-  }, {
-    key: "showSnackBar",
-    value: function showSnackBar(message) {
-      this.snackMessage = message;
-    }
-  }, {
-    key: "showSeanceSelectorDialog",
-    value: function showSeanceSelectorDialog() {
-      this.showSeanceSelector = true;
-    }
-  }, {
-    key: "hideSeanceSelectorDialog",
-    value: function hideSeanceSelectorDialog() {
-      this.showSeanceSelector = false;
-    }
-  }, {
-    key: "getCurrentCellIndices",
-    value: function getCurrentCellIndices() {
-      if (this.currentCell) {
-        var _this$currentCell = this.currentCell,
-            rowIndex = _this$currentCell.rowIndex,
-            cellIndex = _this$currentCell.cellIndex;
-        return {
-          rowIndex: rowIndex,
-          cellIndex: cellIndex
-        };
-      }
-
-      return {
-        rowIndex: 0,
-        cellIndex: 0
-      };
-    }
-  }, {
-    key: "getCellByIndices",
-    value: function getCellByIndices(rowIndex, cellIndex) {
-      return this.seatMap && this.seatMap[rowIndex] && this.seatMap[rowIndex][cellIndex];
-    }
-  }, {
-    key: "seanceCaption",
-    get: function get() {
-      var seance = this.seance;
-      return "".concat(seance.title, " (").concat(seance.date.toLocaleDateString(), ")");
+    key: "hideSnackbar",
+    value: function hideSnackbar() {
+      this.isSnackbarVisible = false;
+      this.snackbarMessage = '';
     }
   }, {
     key: "rowsCount",
@@ -53984,76 +54264,39 @@ function () {
       var seatMap = this.seatMap;
       return seatMap && seatMap.length();
     }
-  }, {
-    key: "currentCell",
-    get: function get() {
-      if (this.selectedCell) {
-        return this.selectedCell;
-      }
-
-      return null;
-    }
-  }, {
-    key: "currentSeatType",
-    get: function get() {
-      var seatType = this.seatTypes[this.selectedSeatType];
-      seatType.name = this.selectedSeatType;
-      return seatType;
-    }
   }]);
 
   return HallEditorStore;
-}(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "showSeanceSelector", [_mobx.observable], {
+}(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "hall", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return new _store.default();
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "cellEditor", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return new _store2.default();
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "seanceSelector", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return new _store3.default();
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, "isSnackbarVisible", [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return false;
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "snackMessage", [_mobx.observable], {
+}), _descriptor5 = _applyDecoratedDescriptor(_class.prototype, "snackbarMessage", [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
-    return null;
+    return '';
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "institution", [_mobx.observable], {
-  enumerable: true,
-  initializer: function initializer() {
-    return {
-      id: 1,
-      title: 'Тюменский драматический театр',
-      error: null
-    };
-  }
-}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, "hall", [_mobx.observable], {
-  enumerable: true,
-  initializer: function initializer() {
-    return {
-      id: 1,
-      title: 'Большой зал',
-      error: null
-    };
-  }
-}), _descriptor5 = _applyDecoratedDescriptor(_class.prototype, "seance", [_mobx.observable], {
-  enumerable: true,
-  initializer: function initializer() {
-    return {
-      id: 1,
-      title: 'Горе от ума',
-      date: new Date(),
-      error: null
-    };
-  }
-}), _descriptor6 = _applyDecoratedDescriptor(_class.prototype, "selectedCell", [_mobx.observable], {
-  enumerable: true,
-  initializer: null
-}), _descriptor7 = _applyDecoratedDescriptor(_class.prototype, "seatMap", [_mobx.observable], {
-  enumerable: true,
-  initializer: null
-}), _descriptor8 = _applyDecoratedDescriptor(_class.prototype, "selectedSeatType", [_mobx.observable], {
-  enumerable: true,
-  initializer: function initializer() {
-    return 'empty';
-  }
-}), _applyDecoratedDescriptor(_class.prototype, "seanceCaption", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "seanceCaption"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "rowsCount", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "rowsCount"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "currentCell", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "currentCell"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "currentSeatType", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "currentSeatType"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "createEmptySeatMap", [_dec], Object.getOwnPropertyDescriptor(_class.prototype, "createEmptySeatMap"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "parseSeatMap", [_dec2], Object.getOwnPropertyDescriptor(_class.prototype, "parseSeatMap"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setSeatPrice", [_dec3], Object.getOwnPropertyDescriptor(_class.prototype, "setSeatPrice"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectSeatType", [_dec4], Object.getOwnPropertyDescriptor(_class.prototype, "selectSeatType"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCell", [_dec5], Object.getOwnPropertyDescriptor(_class.prototype, "selectCell"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCellByIndices", [_dec6], Object.getOwnPropertyDescriptor(_class.prototype, "selectCellByIndices"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "toggleCellActivity", [_dec7], Object.getOwnPropertyDescriptor(_class.prototype, "toggleCellActivity"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "enableCell", [_dec8], Object.getOwnPropertyDescriptor(_class.prototype, "enableCell"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "disableCell", [_dec9], Object.getOwnPropertyDescriptor(_class.prototype, "disableCell"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCellUp", [_dec10], Object.getOwnPropertyDescriptor(_class.prototype, "selectCellUp"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCellDown", [_dec11], Object.getOwnPropertyDescriptor(_class.prototype, "selectCellDown"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCellRight", [_dec12], Object.getOwnPropertyDescriptor(_class.prototype, "selectCellRight"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectCellLeft", [_dec13], Object.getOwnPropertyDescriptor(_class.prototype, "selectCellLeft"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectInstitution", [_dec14], Object.getOwnPropertyDescriptor(_class.prototype, "selectInstitution"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectHall", [_dec15], Object.getOwnPropertyDescriptor(_class.prototype, "selectHall"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "selectSeance", [_dec16], Object.getOwnPropertyDescriptor(_class.prototype, "selectSeance"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "showSnackBar", [_dec17], Object.getOwnPropertyDescriptor(_class.prototype, "showSnackBar"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "showSeanceSelectorDialog", [_dec18], Object.getOwnPropertyDescriptor(_class.prototype, "showSeanceSelectorDialog"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "hideSeanceSelectorDialog", [_dec19], Object.getOwnPropertyDescriptor(_class.prototype, "hideSeanceSelectorDialog"), _class.prototype)), _class));
-exports.default = HallEditorStore;
+}), _applyDecoratedDescriptor(_class.prototype, "rowsCount", [_mobx.computed], Object.getOwnPropertyDescriptor(_class.prototype, "rowsCount"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "showSnackbar", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "showSnackbar"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "hideSnackbar", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "hideSnackbar"), _class.prototype)), _class);
+exports.HallEditorStore = HallEditorStore;
+var hallEditorStore = new HallEditorStore();
+var _default = hallEditorStore;
+exports.default = _default;
 
 /***/ }),
 
@@ -54116,7 +54359,15 @@ function (_Component) {
   _createClass(HallEditor, [{
     key: "render",
     value: function render() {
-      return _react.default.createElement("div", null, "\u0420\u0430\u0437\u0434\u0435\u043B \u043D\u0430\u0445\u043E\u0434\u0438\u0442\u0441\u044F \u0432 \u0440\u0430\u0437\u0440\u0430\u0431\u043E\u0442\u043A\u0435.");
+      var _this2 = this;
+
+      return _react.default.createElement("div", null, "\u0420\u0430\u0437\u0434\u0435\u043B \u043D\u0430\u0445\u043E\u0434\u0438\u0442\u0441\u044F \u0432 \u0440\u0430\u0437\u0440\u0430\u0431\u043E\u0442\u043A\u0435.", _react.default.createElement(_reactToolbox.Button, {
+        label: "Push",
+        onClick: function onClick() {
+          return _this2.store.toggleMark();
+        },
+        accent: true
+      }), this.store.mark.toString());
     }
   }]);
 
@@ -54143,16 +54394,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _AppStore = _interopRequireDefault(__webpack_require__(/*! ./AppStore */ "./AppStore.js"));
-
 var _store = _interopRequireDefault(__webpack_require__(/*! Scenes/HallEditor/store */ "./scenes/HallEditor/store.js"));
+
+var _AppStore = _interopRequireDefault(__webpack_require__(/*! ./AppStore */ "./AppStore.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// pages stores
 var _default = {
   appStore: new _AppStore.default(),
-  hallEditorStore: new _store.default()
+  hallEditorStore: _store.default
 };
 exports.default = _default;
 

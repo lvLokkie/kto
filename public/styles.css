@@ -1,0 +1,36 @@
+.kto-header {
+    border: red 1px solid;
+}
+
+.kto-content {
+    border: green 1px solid;
+}
+
+.audience-room {
+
+}
+
+.audience-room__seat-grid {
+
+}
+
+.audience-room__seat-grid_container {
+
+}
+
+.audience-room__row {
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.audience-room__seat {
+    cursor: pointer;
+    width: 12px;
+    height: 12px;
+    flex-grow: 1;
+    border: 1px solid;
+}
+
+.audience-room__seat:hover {
+    background: #ccc;
+}

@@ -1,0 +1,103 @@
+@navPanel-height: 60px;
+@padding: 12px;
+
+html, body {margin: 0; height: 100%;};
+
+.cta-layout {
+  .cta-appBar {
+
+  }
+  .cta-layout__panel {
+    margin-top: @navPanel-height;
+    padding: @padding;
+  }
+}
+
+.cta-nav {
+  .cta-navLink {
+    padding-right: @padding;
+  }
+}
+
+.cta-hall {
+  padding: @padding;
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  .cta-hall__scene {
+    width: 100%;
+    height: 20px;
+    margin-top: @padding;
+    background: #fafafa;
+    border-bottom: cadetblue 1px solid;
+    align-self: center;
+    font-style: italic;
+    text-align: center;
+    line-height: 20px;
+  }
+  .cta-hall__rows {
+    .cta-hall__row {
+      display: flex;
+      justify-content: space-between;
+      flex-shrink: 1;
+      .cta-hall__seat {
+        min-width: 8px;
+        min-height: 16px;
+        flex-grow: 1;
+        cursor: pointer;
+        border: #2fb3fa 2px solid;
+        margin: 1px;
+      }
+      & .cta-hall__seat_disabled {
+        border: #d6d6d6 2px solid;
+      }
+      & .cta-hall__seat_selected {
+        border: lightskyblue 2px solid;
+      }
+    }
+  }
+}
+
+.cta-hall-editor {
+  .cta-hall-editor__head {
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: space-between;
+    width: 100%;
+    .cta-hall-editor__navigator {
+      height: 36px;
+      .cta-hall-editor__navigator-actions {
+        display: flex;
+        flex-flow: row;
+        align-items: baseline;
+      }
+    }
+    .cta-hall-editor__cell-editor {
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: baseline;
+      padding-left: @padding;
+      .cta-hall-editor__cell-activator {
+        padding-right: @padding;
+      }
+      .cta-hall-editor__seat-editor {
+        padding-left: @padding;
+        display: flex;
+        align-items: baseline;
+        flex-flow: row nowrap;
+      }
+      .cta-hall-editor__input {
+        padding-left: @padding;
+        display: inline-block;
+        max-width: 80px;
+      }
+    }
+  }
+
+}
+
+.cta-autocomplete {
+  cursor: pointer;
+  padding: 0 @padding;
+}
